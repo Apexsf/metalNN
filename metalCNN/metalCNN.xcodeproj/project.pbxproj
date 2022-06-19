@@ -17,6 +17,7 @@
 		0972B30B285B863C00812F87 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0972B30A285B863C00812F87 /* Metal.framework */; };
 		09D80039285DB3540032DC00 /* utils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09D80037285DB3540032DC00 /* utils.mm */; };
 		09D8003C285DC2F00032DC00 /* tensor.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09D8003A285DC2F00032DC00 /* tensor.mm */; };
+		09D8004B285F45A00032DC00 /* metalConstant.metal in Sources */ = {isa = PBXBuildFile; fileRef = 09D8004A285F45A00032DC00 /* metalConstant.metal */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -52,6 +53,7 @@
 		09D80047285E12C30032DC00 /* weight.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = weight.bin; sourceTree = "<group>"; };
 		09D80048285E12C30032DC00 /* input.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = input.bin; sourceTree = "<group>"; };
 		09D80049285E12C30032DC00 /* out.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = out.bin; sourceTree = "<group>"; };
+		09D8004A285F45A00032DC00 /* metalConstant.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = metalConstant.metal; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -113,6 +115,7 @@
 				0972B2F4285B770900812F87 /* conv.h */,
 				0972B2F1285B76F600812F87 /* conv.metal */,
 				0972B2F3285B770900812F87 /* conv.mm */,
+				09D8004A285F45A00032DC00 /* metalConstant.metal */,
 				0972B2FF285B7B3400812F87 /* operator.h */,
 				0972B2FE285B7B3400812F87 /* operator.mm */,
 			);
@@ -204,6 +207,7 @@
 				0972B306285B7F0800812F87 /* add.mm in Sources */,
 				0972B2F5285B770900812F87 /* conv.mm in Sources */,
 				0972B308285B80BF00812F87 /* add.metal in Sources */,
+				09D8004B285F45A00032DC00 /* metalConstant.metal in Sources */,
 				0972B300285B7B3400812F87 /* operator.mm in Sources */,
 				09D8003C285DC2F00032DC00 /* tensor.mm in Sources */,
 			);

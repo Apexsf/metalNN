@@ -39,7 +39,7 @@ int main() {
     NSString* str = [NSString stringWithUTF8String:cString];
     CFRelease(string);
     
-//    std::string input_path =std::string(cString) + "/resource/input.bin";
+
     std::string input_path = "/Users/tinglyfeng/Desktop/metalCNN/script/input.bin";
     std::string output_path = "/Users/tinglyfeng/Desktop/metalCNN/script/out.bin";
     std::string weight_path = "/Users/tinglyfeng/Desktop/metalCNN/script/weight.bin";
@@ -75,7 +75,7 @@ int main() {
     
 
     
-    convRunTimeConstant crtc{2,1,64*64,64,64,
+    convConstant crtc{2,1,64*64,64,64,
         2,2,32*32,32,32,
         3,3,9,2,2,1,1
     };

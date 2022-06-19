@@ -50,7 +50,7 @@ void conv::loadWeight(const tensor& t){
 }
 
 
-void conv::execute(id<MTLBuffer> input, id<MTLBuffer> output, const convRunTimeConstant& constant){
+void conv::execute(id<MTLBuffer> input, id<MTLBuffer> output, const convConstant& constant){
     id <MTLCommandBuffer> commandBuffer = [getResource()->getCommandQueue() commandBuffer];
     id <MTLComputeCommandEncoder> commandEncoder = [commandBuffer computeCommandEncoder];
     [commandEncoder setComputePipelineState:getPSO()];
@@ -59,7 +59,7 @@ void conv::execute(id<MTLBuffer> input, id<MTLBuffer> output, const convRunTimeC
     [commandEncoder setBuffer:output offset:0 atIndex:1];
     [commandEncoder setBuffer:weight_ offset:0 atIndex:2];
     [commandEncoder setBuffer:bias_ offset:0 atIndex:3];
-    [commandEncoder setBytes:&constant length:sizeof(convRunTimeConstant) atIndex:4];
+    [commandEncoder setBytes:&constant length:sizeof(convConstant) atIndex:4];
     
     
     MTLSize threadGroupCounts = MTLSizeMake(4, 4, 4);
