@@ -46,7 +46,7 @@ int main() {
 
     std::shared_ptr<gpuResource> resource = std::make_shared<gpuResource>();
     tensor input_tensor(2,11,71,83);
-    convParams convp{5,3,11,9,4,9,2,2};
+    convParams convp{5,3,11,9,4,9,4,7};
     
     
     input_tensor.loadFromFile(input_path.c_str());
