@@ -34,7 +34,6 @@ public:
         NCHW = 0,
         NC4HW4
     };
-//    tensor () = default;
     tensor (const shape& s);
     tensor(uint b, uint c, uint h, uint w);
     ~tensor();

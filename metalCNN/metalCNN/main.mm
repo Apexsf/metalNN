@@ -43,58 +43,59 @@ int main() {
     std::string input_path = "/Users/tinglyfeng/Desktop/metalCNN/script/input.bin";
     std::string output_path = "/Users/tinglyfeng/Desktop/metalCNN/script/out.bin";
     std::string weight_path = "/Users/tinglyfeng/Desktop/metalCNN/script/weight.bin";
-    
+
     std::shared_ptr<gpuResource> resource = std::make_shared<gpuResource>();
-    convParams convp{3,3,4,8,1,1,2,2};
-    conv conv_op(resource, "conv", convp);
+    tensor input_tensor(2,6,76,98);
+    convParams convp{3,3,6,9,1,1,3,3};
     
-
-    uint out_size = 2 * 8 * 32 * 32;
-
-    id<MTLBuffer> outBuffer = [resource->getDevice() newBufferWithLength:out_size * sizeof(float) options:MTLResourceStorageModeShared];
     
-    tensor input_tensor(2,4,64,64);
     input_tensor.loadFromFile(input_path.c_str());
     input_tensor.reInterpret(tensor::interpOrder::NC4HW4);
-    
     id<MTLBuffer> inBuffer = [resource->getDevice() newBufferWithLength:input_tensor.memSize() * sizeof(float) options:MTLResourceStorageModeShared];
+    
+    shape outShape = conv::calOutShape(input_tensor.getShape(), convp);
+
+    uint outSize = outShape.batch * outShape.channel * outShape.width * outShape.height;
+    
+
+    id<MTLBuffer> outBuffer = [resource->getDevice() newBufferWithLength:outSize * sizeof(float) options:MTLResourceStorageModeShared];
+    
 
     memcpy(inBuffer.contents, input_tensor.getRawPointer(), input_tensor.memSize() * sizeof(float));
 
     
-    float* out_p =(float*) malloc(out_size*float(4));
+    float* torchOut =(float*) malloc(outSize*float(4));
 
-    readDataFromFile(output_path.c_str(), out_size*sizeof(float), (void*)out_p);
+    readDataFromFile(output_path.c_str(), outSize*sizeof(float), (void*)torchOut);
     
-    tensor weight(8,4,3,3);
+    tensor weight(convp.outC,convp.inC,convp.kernelH, convp.kernelW);
     weight.loadFromFile(weight_path.c_str());
+    
+    conv conv_op(resource, "conv", convp);
     conv_op.loadWeight(weight);
+    float* outP = (float* ) outBuffer.contents;
     
-    float* in_p = (float*) inBuffer.contents;
-    float* out_c_p = (float* ) outBuffer.contents;
     
-
-    
-    convConstant crtc{2,1,64*64,64,64,
-        2,2,32*32,32,32,
-        3,3,9,2,2,1,1
-    };
-    
-    conv_op.execute(inBuffer, outBuffer, crtc);
-    
-    tensor output_tensor(2,8,32,32);
-    output_tensor.loadFromMemory(out_c_p, tensor::interpOrder::NC4HW4);
+    conv_op.execute(inBuffer, outBuffer, conv::makeConvConstant(input_tensor.getShape(), convp));
+    tensor output_tensor(outShape);
+    output_tensor.loadFromMemory(outP, tensor::interpOrder::NC4HW4);
     output_tensor.reInterpret(tensor::interpOrder::NCHW);
-    out_c_p = output_tensor.getRawPointer();
+    outP = output_tensor.getRawPointer();
     
     double diff = 0;
     size_t diff_cnt = 0;
-    for(size_t i = 0; i < out_size; ++i){
-        diff +=std::abs( (out_c_p[i] - out_p[i]) );
-        if (out_c_p[i] != out_p[i]){
+    for(size_t i = 0; i < outSize; ++i){
+        diff +=std::abs( (outP[i] - torchOut[i]) );
+        if (outP[i] != torchOut[i]){
             diff_cnt+=1;
         }
+        if (diff > 1){
+            std::cout;
+        }
     }
+    
+    std::cout << "diff : " << diff << std::endl;
+    free(torchOut);
     
     return 0;
     

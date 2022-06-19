@@ -15,6 +15,7 @@
 #include "operator.h"
 #include "metalConstant.metal"
 
+
 struct convParams{
     uint kernelH;
     uint kernelW;
@@ -26,8 +27,13 @@ struct convParams{
     uint strideW;
 };
 
+
 class conv : public op{
 public:
+    static convConstant makeConvConstant(const shape& inShape, const convParams& param);
+    
+    static shape calOutShape(const shape& inShape, const convParams& params);
+    
     conv(std::shared_ptr<gpuResource> resource, std::string name, const convParams& params);
     const convParams& getParams () const {
         return params_;

@@ -63,11 +63,49 @@ void conv::execute(id<MTLBuffer> input, id<MTLBuffer> output, const convConstant
     
     
     MTLSize threadGroupCounts = MTLSizeMake(4, 4, 4);
-    MTLSize threadgroups = MTLSizeMake( 8 , 8,  1);
+    MTLSize threadgroups = MTLSizeMake(constant.out_width / 4 , constant.out_height / 4,  (constant.out_slice * constant.out_batch) / 4);
     
     
     [commandEncoder dispatchThreadgroups:threadgroups threadsPerThreadgroup:threadGroupCounts];
     [commandEncoder endEncoding];
     [commandBuffer commit];
     [commandBuffer waitUntilCompleted];
+}
+
+shape conv::calOutShape(const shape& inShape, const convParams& params){
+    shape outShape;
+    outShape.batch = inShape.batch;
+    outShape.channel = params.outC;
+    outShape.height = (inShape.height - params.kernelH + 2 * params.padY) / params.strideH + 1;
+    outShape.width = (inShape.width - params.kernelW + 2 *
+                      params.padX) / params.strideW + 1;
+    return outShape;
+}
+
+convConstant conv::makeConvConstant(const shape& inShape, const convParams& params){
+    convConstant constant;
+    shape outShape = calOutShape(inShape, params);
+    
+    constant.in_batch = inShape.batch;
+    constant.in_slice = divUp(inShape.channel, 4);
+    constant.in_size = inShape.width * inShape.height;
+    constant.in_height = inShape.height;
+    constant.in_width = inShape.width;
+    
+    constant.out_batch = inShape.batch;
+    constant.out_slice = divUp(params.outC, 4);
+    constant.out_size = outShape.width * outShape.height;
+    constant.out_height = outShape.height;
+    constant.out_width = outShape.width;
+    
+    constant.kernel_h = params.kernelH;
+    constant.kernel_w = params.kernelW;
+    constant.kernel_size = params.kernelW * params.kernelH;
+    constant.stride_h = params.strideH;
+    constant.stride_w = params.strideW;
+    constant.pad_x = params.padX;
+    constant.pad_y = params.padY;
+    
+    return constant;
+    
 }
