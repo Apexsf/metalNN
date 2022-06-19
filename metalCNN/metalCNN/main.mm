@@ -45,8 +45,8 @@ int main() {
     std::string weight_path = "/Users/tinglyfeng/Desktop/metalCNN/script/weight.bin";
 
     std::shared_ptr<gpuResource> resource = std::make_shared<gpuResource>();
-    tensor input_tensor(2,6,76,98);
-    convParams convp{3,3,6,9,1,1,3,3};
+    tensor input_tensor(2,11,71,83);
+    convParams convp{5,3,11,9,4,9,2,2};
     
     
     input_tensor.loadFromFile(input_path.c_str());
@@ -55,18 +55,19 @@ int main() {
     
     shape outShape = conv::calOutShape(input_tensor.getShape(), convp);
 
-    uint outSize = outShape.batch * outShape.channel * outShape.width * outShape.height;
+    uint outMemSize = outShape.batch * roundUp(outShape.channel, 4) * outShape.width * outShape.height;
+    uint outSize =outShape.batch * outShape.channel * outShape.width * outShape.height;
     
 
-    id<MTLBuffer> outBuffer = [resource->getDevice() newBufferWithLength:outSize * sizeof(float) options:MTLResourceStorageModeShared];
+    id<MTLBuffer> outBuffer = [resource->getDevice() newBufferWithLength:outMemSize * sizeof(float) options:MTLResourceStorageModeShared];
     
 
     memcpy(inBuffer.contents, input_tensor.getRawPointer(), input_tensor.memSize() * sizeof(float));
 
     
-    float* torchOut =(float*) malloc(outSize*float(4));
+    float* torchOut =(float*) malloc(outMemSize*float(4));
 
-    readDataFromFile(output_path.c_str(), outSize*sizeof(float), (void*)torchOut);
+    readDataFromFile(output_path.c_str(), outMemSize*sizeof(float), (void*)torchOut);
     
     tensor weight(convp.outC,convp.inC,convp.kernelH, convp.kernelW);
     weight.loadFromFile(weight_path.c_str());

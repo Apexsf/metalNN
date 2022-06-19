@@ -62,8 +62,8 @@ void conv::execute(id<MTLBuffer> input, id<MTLBuffer> output, const convConstant
     [commandEncoder setBytes:&constant length:sizeof(convConstant) atIndex:4];
     
     
-    MTLSize threadGroupCounts = MTLSizeMake(4, 4, 4);
-    MTLSize threadgroups = MTLSizeMake(constant.out_width / 4 , constant.out_height / 4,  (constant.out_slice * constant.out_batch) / 4);
+    MTLSize threadGroupCounts = MTLSizeMake(1, 1, 1);
+    MTLSize threadgroups = MTLSizeMake(constant.out_width , constant.out_height,  (constant.out_slice * constant.out_batch));
     
     
     [commandEncoder dispatchThreadgroups:threadgroups threadsPerThreadgroup:threadGroupCounts];

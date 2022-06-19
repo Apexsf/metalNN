@@ -4,8 +4,8 @@ import torch.nn as nn
 
 torch.manual_seed(42)
 
-x = torch.randn(2,6,76,98)
-conv = nn.Conv2d(in_channels=6, out_channels = 9, kernel_size= 3, padding=1, stride= 3,bias=False)
+x = torch.randn(2,11,71,83)
+conv = nn.Conv2d(in_channels=11, out_channels = 9, kernel_size= (5,3), padding=(4,9), stride= 2,bias=False)
 out = conv(x)
 
 x.detach().flatten().numpy().tofile("input.bin")
