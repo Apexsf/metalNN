@@ -10,13 +10,13 @@
 struct convConstant{
     int in_batch;
     int in_slice; // slice per batch
-    int in_size; // size per slice, h*w
+    int in_size;  // size per slice, h*w
     int in_height;
     int in_width;
     
     int out_batch;
     int out_slice; // slice per batch
-    int out_size; //size per slice, h*w
+    int out_size;  //size per slice, h*w
     int out_height;
     int out_width;
     

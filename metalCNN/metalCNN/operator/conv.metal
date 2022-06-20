@@ -45,7 +45,7 @@ kernel void conv(const device float4* in[[buffer(0)]],
     
     device float4* out_start_p = out + idx_b * cp.out_slice * cp.out_size + idx_s * cp.out_size + idx.y * cp.out_width + idx.x;
 
-    float4 res = {0.0,0.0,0.0,0.0};
+    float4 res = bias[idx_s];
     for(int i_s = 0; i_s < cp.in_slice; ++i_s) {
         for(int i_h = 0; i_h < kernelH; ++i_h){
             for(int i_w = 0; i_w < kernelW; ++i_w){

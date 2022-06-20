@@ -43,6 +43,7 @@ int main() {
     std::string input_path = "/Users/tinglyfeng/Desktop/metalCNN/script/input.bin";
     std::string output_path = "/Users/tinglyfeng/Desktop/metalCNN/script/out.bin";
     std::string weight_path = "/Users/tinglyfeng/Desktop/metalCNN/script/weight.bin";
+    std::string bias_path = "/Users/tinglyfeng/Desktop/metalCNN/script/bias.bin";
 
     std::shared_ptr<gpuResource> resource = std::make_shared<gpuResource>();
     tensor input_tensor(2,11,71,83);
@@ -71,9 +72,11 @@ int main() {
     
     tensor weight(convp.outC,convp.inC,convp.kernelH, convp.kernelW);
     weight.loadFromFile(weight_path.c_str());
+    tensor bias(1, convp.outC, 1,1);
+    bias.loadFromFile(bias_path.c_str());
     
     conv conv_op(resource, "conv", convp);
-    conv_op.loadWeight(weight);
+    conv_op.loadWeight(weight, &bias);
     float* outP = (float* ) outBuffer.contents;
     
     

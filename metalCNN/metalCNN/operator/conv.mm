@@ -11,7 +11,7 @@ conv::conv(std::shared_ptr<gpuResource> resource, std::string name, const convPa
     
 }
 
-void conv::loadWeight(const tensor& t){
+void conv::loadWeight(const tensor& t, tensor* bias){
     uint ic = params_.inC;
     uint oc = params_.outC;
     uint h = params_.kernelH;
@@ -46,8 +46,26 @@ void conv::loadWeight(const tensor& t){
         }
     }
     
-    std::cout<<'d';
+    // load bias
+    uint outCDU = roundUp(params_.outC, 4);
+    bias_ = [getResource()->getDevice() newBufferWithLength:outCDU * sizeof(float) options:MTLResourceStorageModeShared];
+    float* dst_b_p = (float*) bias_.contents;
+    if (bias) {
+        float* src_b_p = bias->getRawPointer();
+        for(uint i = 0; i < bias->getShape().channel; i++){
+            dst_b_p[i] = src_b_p[i];
+        }
+        for(uint i = bias->getShape().channel; i < outCDU; i++){
+            dst_b_p[i] = 0;
+        }
+    }else {
+        for(uint i = 0; i < outCDU; i++){
+            dst_b_p[i] = 0.0;
+        }
+    }
 }
+
+
 
 
 void conv::execute(id<MTLBuffer> input, id<MTLBuffer> output, const convConstant& constant){
