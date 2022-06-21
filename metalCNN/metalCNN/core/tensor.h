@@ -34,7 +34,11 @@ public:
         NCHW = 0,
         NC4HW4
     };
+    tensor() = default;
+    tensor& operator = (const tensor&t);
     tensor (const shape& s);
+    tensor(const tensor& t);
+    tensor (tensor&& t);
     tensor(uint b, uint c, uint h, uint w);
     ~tensor();
     

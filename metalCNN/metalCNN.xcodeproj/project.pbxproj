@@ -15,6 +15,7 @@
 		0972B306285B7F0800812F87 /* add.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0972B304285B7F0800812F87 /* add.mm */; };
 		0972B308285B80BF00812F87 /* add.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0972B307285B80BF00812F87 /* add.metal */; };
 		0972B30B285B863C00812F87 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0972B30A285B863C00812F87 /* Metal.framework */; };
+		09A1973128621AE300B6F74E /* bn.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09A1972F28621AE300B6F74E /* bn.mm */; };
 		09D80039285DB3540032DC00 /* utils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09D80037285DB3540032DC00 /* utils.mm */; };
 		09D8003C285DC2F00032DC00 /* tensor.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09D8003A285DC2F00032DC00 /* tensor.mm */; };
 		09D8004B285F45A00032DC00 /* metalConstant.metal in Sources */ = {isa = PBXBuildFile; fileRef = 09D8004A285F45A00032DC00 /* metalConstant.metal */; };
@@ -46,6 +47,8 @@
 		0972B305285B7F0800812F87 /* add.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = add.h; sourceTree = "<group>"; };
 		0972B307285B80BF00812F87 /* add.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = add.metal; sourceTree = "<group>"; };
 		0972B30A285B863C00812F87 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
+		09A1972F28621AE300B6F74E /* bn.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = bn.mm; sourceTree = "<group>"; };
+		09A1973028621AE300B6F74E /* bn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bn.h; sourceTree = "<group>"; };
 		09D80037285DB3540032DC00 /* utils.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = utils.mm; sourceTree = "<group>"; };
 		09D80038285DB3540032DC00 /* utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
 		09D8003A285DC2F00032DC00 /* tensor.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = tensor.mm; sourceTree = "<group>"; };
@@ -108,6 +111,8 @@
 			children = (
 				0972B305285B7F0800812F87 /* add.h */,
 				0972B307285B80BF00812F87 /* add.metal */,
+				09A1972F28621AE300B6F74E /* bn.mm */,
+				09A1973028621AE300B6F74E /* bn.h */,
 				0972B304285B7F0800812F87 /* add.mm */,
 				0972B2F4285B770900812F87 /* conv.h */,
 				0972B2F1285B76F600812F87 /* conv.metal */,
@@ -197,6 +202,7 @@
 				0972B2FD285B78E400812F87 /* gpuResource.mm in Sources */,
 				0972B2EB285B76C700812F87 /* main.mm in Sources */,
 				0972B2F2285B76F600812F87 /* conv.metal in Sources */,
+				09A1973128621AE300B6F74E /* bn.mm in Sources */,
 				09D80039285DB3540032DC00 /* utils.mm in Sources */,
 				0972B306285B7F0800812F87 /* add.mm in Sources */,
 				0972B2F5285B770900812F87 /* conv.mm in Sources */,

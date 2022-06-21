@@ -1,7 +1,9 @@
 import torch
 import numpy as np
 import torch.nn as nn
+import os
 
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 torch.manual_seed(42)
 
 x = torch.randn(2,11,71,83)

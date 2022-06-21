@@ -11,7 +11,7 @@ conv::conv(std::shared_ptr<gpuResource> resource, std::string name, const convPa
     
 }
 
-void conv::loadWeight(const tensor& t, tensor* bias){
+void conv::loadWeight(std::map<std::string, tensor>& weights){
     uint ic = params_.inC;
     uint oc = params_.outC;
     uint h = params_.kernelH;
@@ -26,7 +26,7 @@ void conv::loadWeight(const tensor& t, tensor* bias){
     
     weight_ = [getResource()->getDevice() newBufferWithLength:dstSize * sizeof(float) options:MTLResourceStorageModeShared];
     
-    float* src_p = t.getRawPointer();
+    float* src_p = weights["weight"].getRawPointer();
     float* dst_p = (float*) weight_.contents;
     
     for(uint i_oc = 0; i_oc< oc; ++i_oc){
@@ -50,12 +50,13 @@ void conv::loadWeight(const tensor& t, tensor* bias){
     uint outCDU = roundUp(params_.outC, 4);
     bias_ = [getResource()->getDevice() newBufferWithLength:outCDU * sizeof(float) options:MTLResourceStorageModeShared];
     float* dst_b_p = (float*) bias_.contents;
-    if (bias) {
-        float* src_b_p = bias->getRawPointer();
-        for(uint i = 0; i < bias->getShape().channel; i++){
+    if (weights.find("bias") != weights.end()) {
+        float* src_b_p = weights["bias"].getRawPointer();
+        uint c = weights["bias"].getShape().channel;
+        for(uint i = 0; i < c; i++){
             dst_b_p[i] = src_b_p[i];
         }
-        for(uint i = bias->getShape().channel; i < outCDU; i++){
+        for(uint i = c; i < outCDU; i++){
             dst_b_p[i] = 0;
         }
     }else {

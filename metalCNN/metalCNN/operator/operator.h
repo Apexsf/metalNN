@@ -11,6 +11,7 @@
 
 #include <string>
 #include <memory>
+#include <map>
 #include "gpuResource.h"
 #include "tensor.h"
 
@@ -34,7 +35,7 @@ public:
         return pso_;
     }
     
-    virtual void loadWeight(const tensor& t) {
+    virtual void loadWeight(std::map<std::string, tensor>& weights) {
         
     };
 private:

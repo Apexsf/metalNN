@@ -40,7 +40,7 @@ public:
     }
     
     void execute(id<MTLBuffer> input, id<MTLBuffer> output, const convConstant& constant);
-    void loadWeight(const tensor& t, tensor* bias);
+    virtual void loadWeight(std::map<std::string, tensor>& weights) override;
     
 private:
     id<MTLBuffer> weight_;

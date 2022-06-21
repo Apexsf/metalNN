@@ -24,6 +24,41 @@ stride_{c*h*w, h*w, w, 1}{
     p_ = (float*) malloc(absSize_ * sizeof(float));
 }
 
+tensor& tensor:: operator = (const tensor& t) {
+    order_ = t.order_;
+    shape_ = t.shape_;
+    absSize_ = t.absSize_;
+    memSize_ = t.memSize_;
+    stride_ = t.stride_;
+    if (t.p_){
+        p_ = (float*)malloc(memSize_ * sizeof(float));
+        memcpy(p_, t.p_, memSize_*sizeof(float));
+    }
+    
+    return *this;
+}
+
+tensor::tensor(const tensor& t):
+order_(t.order_), shape_(t.shape_), absSize_(t.absSize_),
+memSize_(t.memSize_), stride_(t.stride_){
+    if (t.p_){
+        p_ = (float*)malloc(memSize_ * sizeof(float));
+        memcpy(p_, t.p_, memSize_*sizeof(float));
+    }
+}
+
+tensor::tensor(tensor&& t) {
+    order_ = t.order_;
+    shape_ = t.shape_;
+    absSize_ = t.absSize_;
+    memSize_ = t.memSize_;
+    stride_ = t.stride_;
+    if (t.p_){
+        p_ = t.p_;
+        t.p_ = nullptr;
+    }
+}
+
 tensor::~tensor(){
     if (p_) {
         free(p_);
