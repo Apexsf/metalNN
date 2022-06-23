@@ -14,6 +14,9 @@ public:
     bn(std::shared_ptr<gpuResource> resource, std::string name, uint channel);
     virtual void loadWeight(std::map<std::string, tensor>& weights) override;
     
+    void execute (id<MTLBuffer>input, id<MTLBuffer> output);
+    
+    
 private:
     uint channel_;
     id<MTLBuffer> gamma_;

@@ -24,7 +24,7 @@ void conv::loadWeight(std::map<std::string, tensor>& weights){
 //    size_t dstSize = ocRU4 * icDU4 * 16 * h * w;
     size_t dstSize = ocDU4 * icDU4 * 16 * h * w;
     
-    weight_ = [getResource()->getDevice() newBufferWithLength:dstSize * sizeof(float) options:MTLResourceStorageModeShared];
+    weight_ = makingBuffer(dstSize * sizeof(float), MTLResourceStorageModeShared);
     
     float* src_p = weights["weight"].getRawPointer();
     float* dst_p = (float*) weight_.contents;
@@ -48,7 +48,7 @@ void conv::loadWeight(std::map<std::string, tensor>& weights){
     
     // load bias
     uint outCDU = roundUp(params_.outC, 4);
-    bias_ = [getResource()->getDevice() newBufferWithLength:outCDU * sizeof(float) options:MTLResourceStorageModeShared];
+    bias_ = makingBuffer(outCDU * sizeof(float), MTLResourceStorageModeShared);
     float* dst_b_p = (float*) bias_.contents;
     if (weights.find("bias") != weights.end()) {
         float* src_b_p = weights["bias"].getRawPointer();

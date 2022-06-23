@@ -27,6 +27,8 @@ public:
         return resource_;
     }
     
+    id<MTLBuffer> makingBuffer(size_t byteSize, int mode);
+    
     const id <MTLFunction>& getShader() const  {
         return shader_;
     }

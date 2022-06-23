@@ -28,3 +28,10 @@ struct convConstant{
     int pad_x;
     int pad_y;
 };
+
+
+struct bnConstant {
+    int batch;
+    int slice;
+    int size;
+};

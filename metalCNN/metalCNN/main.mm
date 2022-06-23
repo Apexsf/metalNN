@@ -29,8 +29,8 @@
 //    return 0;
 //}
 
-
-int main() {
+void test_conv(){
+    
     CFBundleRef bundle = CFBundleGetMainBundle();
     CFURLRef url = CFBundleCopyBundleURL(bundle);
     CFStringRef string = CFURLCopyFileSystemPath(url, kCFURLPOSIXPathStyle);
@@ -104,9 +104,13 @@ int main() {
     
     std::cout << "diff : " << diff << std::endl;
     free(torchOut);
+}
+
+void test_bn() {
     
-    return 0;
-    
+}
+int main() {
+    test_conv();
     
     
 }
