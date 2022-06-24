@@ -12,6 +12,7 @@
 #include <string>
 #include <memory>
 #include <map>
+#include <cmath>
 #include "gpuResource.h"
 #include "tensor.h"
 

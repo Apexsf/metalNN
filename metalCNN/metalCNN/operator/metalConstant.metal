@@ -5,7 +5,8 @@
 //  Created by tinglyfeng on 2022/6/19.
 //
 
-
+#ifndef metalConstant_metal
+#define metalConstant_metal
 
 struct convConstant{
     int in_batch;
@@ -35,3 +36,5 @@ struct bnConstant {
     int slice;
     int size;
 };
+
+#endif

@@ -11,23 +11,7 @@
 #include <string>
 #include "add.h"
 #include "conv.h"
-
-//int main(int argc, const char * argv[]) {
-//    @autoreleasepool {
-//        std::shared_ptr<gpuResource> resource = std::make_shared<gpuResource>();
-//        add op_add(resource);
-//        for(int i = 0; i < 10000; i ++) {
-//            auto start = std::chrono::steady_clock::now();
-//            // insert code here...
-//            op_add.execute();
-//            float* res= op_add.getOutput();
-//            auto end = std::chrono::steady_clock::now();
-//            auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-//            std::cout  << duration << "  ";
-//        }
-//    }
-//    return 0;
-//}
+#include "bn.h"
 
 void test_conv(){
     
@@ -107,10 +91,79 @@ void test_conv(){
 }
 
 void test_bn() {
+    std::string input_path = "/Users/tinglyfeng/Desktop/metalCNN/script/bn/input.bin";
+    std::string output_path = "/Users/tinglyfeng/Desktop/metalCNN/script/bn/out.bin";
+    std::string gamma_path =
+        "/Users/tinglyfeng/Desktop/metalCNN/script/bn/gamma.bin";
+    std::string beta_path =
+        "/Users/tinglyfeng/Desktop/metalCNN/script/bn/beta.bin";
+    std::string rm_path =
+        "/Users/tinglyfeng/Desktop/metalCNN/script/bn/running_mean.bin";
+    std::string rv_path = "/Users/tinglyfeng/Desktop/metalCNN/script/bn/running_var.bin";
+    std::shared_ptr<gpuResource> resource = std::make_shared<gpuResource>();
+    shape shp{2,64,64,64};
+    tensor input_tensor(shp);
+    input_tensor.loadFromFile(input_path.c_str());
+    input_tensor.reInterpret(tensor::interpOrder::NC4HW4);
     
+    tensor output_tensor(shp);
+    output_tensor.loadFromFile(output_path.c_str());
+    
+    id<MTLBuffer> input_buffer = [resource->getDevice()
+                                  newBufferWithLength:input_tensor.memSize() * sizeof(float) options:MTLResourceStorageModeShared];
+    id<MTLBuffer> output_buffer = [resource->getDevice() newBufferWithLength:output_tensor.memSize() * sizeof(float) options:MTLResourceStorageModeShared];
+    
+    memcpy(input_buffer.contents, input_tensor.getRawPointer(), input_tensor.memSize() * sizeof(float));
+    
+    tensor gamma(1,shp.channel,1,1);
+    tensor beta(1,shp.channel,1,1);
+    tensor rm(1,shp.channel,1,1);
+    tensor rv(1,shp.channel,1,1);
+    gamma.loadFromFile(gamma_path.c_str());
+    beta.loadFromFile(beta_path.c_str());
+    rm.loadFromFile(rm_path.c_str());
+    rv.loadFromFile(rv_path.c_str());
+    
+    std::map<std::string, tensor> bnWeights = {
+        {"gamma", std::move(gamma)},
+        {"beta", std::move(beta)},
+        {"running_mean", std::move(rm)},
+        {"running_var", std::move(rv)}
+    };
+    
+    bn bn_op(resource, std::string("bn"), 64);
+    bn_op.loadWeight(bnWeights);
+    
+    bn_op.execute(input_buffer, output_buffer, shp);
+    
+//    float* cmlout = (float*)output_buffer.contents;
+    tensor cmlout_tensor(shp);
+    cmlout_tensor.loadFromMemory((float*)output_buffer.contents, tensor::interpOrder::NC4HW4);
+    
+    cmlout_tensor.reInterpret(tensor::interpOrder::NCHW);
+    float* cmlout_p = cmlout_tensor.getRawPointer();
+    float* torchout_p = (float*)output_tensor.getRawPointer();
+    
+    uint outSize = cmlout_tensor.getShape().size();
+    double diff = 0;
+    size_t diff_cnt = 0;
+    for(size_t i = 0; i < outSize; ++i){
+        diff +=std::abs( (cmlout_p[i] - torchout_p[i]) );
+        if (cmlout_p[i] != torchout_p[i]){
+            diff_cnt+=1;
+        }
+        if (diff > 1){
+            std::cout;
+        }
+    }
+    std::cout << "diff : " << diff << std::endl;
+//    -0.800417065
+//    -0.976112008
+//    -0.175694913
 }
 int main() {
-    test_conv();
+//    test_conv();
+    test_bn();
     
     
 }

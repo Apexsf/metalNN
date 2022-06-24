@@ -13,12 +13,16 @@
 #include "utils.h"
 
 using uint = unsigned int;
+struct shape;
 
 struct shape {
     uint batch;
     uint channel;
     uint height;
     uint width;
+    uint size() const{
+        return batch*channel*height*width;
+    }
 };
 
 struct stride {

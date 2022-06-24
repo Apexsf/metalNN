@@ -8,13 +8,14 @@
 #ifndef bn_h
 #define bn_h
 #include "operator.h"
+#include "metalConstant.metal"
 
 class bn : public op {
 public:
     bn(std::shared_ptr<gpuResource> resource, std::string name, uint channel);
     virtual void loadWeight(std::map<std::string, tensor>& weights) override;
     
-    void execute (id<MTLBuffer>input, id<MTLBuffer> output);
+    void execute (id<MTLBuffer>input, id<MTLBuffer> output, const shape& shp);
     
     
 private:
@@ -22,7 +23,7 @@ private:
     id<MTLBuffer> gamma_;
     id<MTLBuffer> beta_;
     id<MTLBuffer> runningMean_;
-    id<MTLBuffer> runningVar_;
+    id<MTLBuffer> runningVarSqrtWithEps_;
 };
 
 #endif /* bn_hpp */

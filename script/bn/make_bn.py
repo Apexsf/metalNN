@@ -9,10 +9,10 @@ torch.manual_seed(42)
 
 r18 = resnet18(pretrained=True)
 
-bn = nn.BatchNorm2d(16)
+bn = r18.layer1[0].bn1
 bn.eval()
 
-x = torch.randn((2,16,64,64))
+x = torch.randn((2,64,64,64))
 out = bn(x)
 
 x.detach().flatten().numpy().tofile("input.bin")
@@ -22,4 +22,11 @@ gamma = bn.weight.data
 beta = bn.bias.data
 running_mean =  bn.running_mean
 running_val = bn.running_var
+
+gamma.numpy().tofile('gamma.bin')
+beta.numpy().tofile('beta.bin')
+running_mean.numpy().tofile('running_mean.bin')
+running_val.numpy().tofile('running_var.bin')
+
+
 print()
