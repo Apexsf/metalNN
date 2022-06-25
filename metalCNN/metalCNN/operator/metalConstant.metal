@@ -34,6 +34,8 @@ struct convConstant{
 struct bnConstant {
     int batch;
     int slice;
+    int height;
+    int width;
     int size;
 };
 

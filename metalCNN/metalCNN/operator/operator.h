@@ -13,6 +13,7 @@
 #include <memory>
 #include <map>
 #include <cmath>
+#include <vector>
 #include "gpuResource.h"
 #include "tensor.h"
 
@@ -38,9 +39,18 @@ public:
         return pso_;
     }
     
-    virtual void loadWeight(std::map<std::string, tensor>& weights) {
-        
-    };
+    id<MTLCommandBuffer> newCommandBuffer(){
+        return [resource_->getCommandQueue() commandBuffer];
+    }
+    
+
+    virtual void setBuffer (std::vector<id<MTLBuffer>>& inOutBuffers, id<MTLComputeCommandEncoder> commandEncoder) = 0;
+    virtual void setConstant(void* constantP, id<MTLComputeCommandEncoder> commandEncoder) = 0;
+    virtual void dispatch(void* constantP, id<MTLComputeCommandEncoder> commandEncoder) = 0;
+    
+    void run(std::vector<id<MTLBuffer>>& inOutBuffers, void* constantP);
+    
+    virtual void loadWeight(std::map<std::string, tensor>& weights) = 0;
 private:
     std::string opName_;
     std::shared_ptr<gpuResource> resource_;

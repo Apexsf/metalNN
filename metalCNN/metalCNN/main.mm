@@ -67,8 +67,11 @@ void test_conv(){
     conv_op.loadWeight(convWeights);
     float* outP = (float* ) outBuffer.contents;
     
+    std::vector<id<MTLBuffer>> inOutBuffers{inBuffer, outBuffer};
+    convConstant convConst = conv::makeConvConstant(input_tensor.getShape(), convp);
+    conv_op.run(inOutBuffers, &convConst);
     
-    conv_op.execute(inBuffer, outBuffer, conv::makeConvConstant(input_tensor.getShape(), convp));
+    
     tensor output_tensor(outShape);
     output_tensor.loadFromMemory(outP, tensor::interpOrder::NC4HW4);
     output_tensor.reInterpret(tensor::interpOrder::NCHW);
@@ -101,7 +104,7 @@ void test_bn() {
         "/Users/tinglyfeng/Desktop/metalCNN/script/bn/running_mean.bin";
     std::string rv_path = "/Users/tinglyfeng/Desktop/metalCNN/script/bn/running_var.bin";
     std::shared_ptr<gpuResource> resource = std::make_shared<gpuResource>();
-    shape shp{2,64,64,64};
+    shape shp{2,64,67,67};
     tensor input_tensor(shp);
     input_tensor.loadFromFile(input_path.c_str());
     input_tensor.reInterpret(tensor::interpOrder::NC4HW4);
@@ -133,10 +136,10 @@ void test_bn() {
     
     bn bn_op(resource, std::string("bn"), 64);
     bn_op.loadWeight(bnWeights);
+    std::vector<id<MTLBuffer>> inOutBuffers{input_buffer, output_buffer};
+    bnConstant bnC{2,(int)divUp(shp.channel, 4), (int)shp.height, (int)shp.width, (int)(shp.height * shp.width)};
+    bn_op.run(inOutBuffers, &bnC);
     
-    bn_op.execute(input_buffer, output_buffer, shp);
-    
-//    float* cmlout = (float*)output_buffer.contents;
     tensor cmlout_tensor(shp);
     cmlout_tensor.loadFromMemory((float*)output_buffer.contents, tensor::interpOrder::NC4HW4);
     
@@ -145,24 +148,26 @@ void test_bn() {
     float* torchout_p = (float*)output_tensor.getRawPointer();
     
     uint outSize = cmlout_tensor.getShape().size();
-    double diff = 0;
+    float diff;
+    float total_diff = 0;
+    float max_diff = 0;
     size_t diff_cnt = 0;
     for(size_t i = 0; i < outSize; ++i){
-        diff +=std::abs( (cmlout_p[i] - torchout_p[i]) );
+        diff = std::abs( (cmlout_p[i] - torchout_p[i]) );
+        total_diff += diff;
+        max_diff = std::max(max_diff, diff);
         if (cmlout_p[i] != torchout_p[i]){
             diff_cnt+=1;
         }
-        if (diff > 1){
+        if (total_diff > 1){
             std::cout;
         }
     }
-    std::cout << "diff : " << diff << std::endl;
-//    -0.800417065
-//    -0.976112008
-//    -0.175694913
+    std::cout << "total diff : " << total_diff << std::endl;
+    std::cout << "max diff : " << max_diff << std::endl;
 }
 int main() {
-//    test_conv();
+    test_conv();
     test_bn();
     
     

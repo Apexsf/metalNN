@@ -66,30 +66,47 @@ void conv::loadWeight(std::map<std::string, tensor>& weights){
     }
 }
 
-
-
-
-void conv::execute(id<MTLBuffer> input, id<MTLBuffer> output, const convConstant& constant){
-    id <MTLCommandBuffer> commandBuffer = [getResource()->getCommandQueue() commandBuffer];
-    id <MTLComputeCommandEncoder> commandEncoder = [commandBuffer computeCommandEncoder];
-    [commandEncoder setComputePipelineState:getPSO()];
-    
-    [commandEncoder setBuffer:input offset:0 atIndex:0];
-    [commandEncoder setBuffer:output offset:0 atIndex:1];
+void conv::setBuffer (std::vector<id<MTLBuffer>>& inOutBuffers, id<MTLComputeCommandEncoder> commandEncoder){
+    [commandEncoder setBuffer:inOutBuffers[0] offset:0 atIndex:0];
+    [commandEncoder setBuffer:inOutBuffers[1] offset:0 atIndex:1];
     [commandEncoder setBuffer:weight_ offset:0 atIndex:2];
     [commandEncoder setBuffer:bias_ offset:0 atIndex:3];
-    [commandEncoder setBytes:&constant length:sizeof(convConstant) atIndex:4];
-    
-    
-    MTLSize threadGroupCounts = MTLSizeMake(1, 1, 1);
-    MTLSize threadgroups = MTLSizeMake(constant.out_width , constant.out_height,  (constant.out_slice * constant.out_batch));
-    
-    
-    [commandEncoder dispatchThreadgroups:threadgroups threadsPerThreadgroup:threadGroupCounts];
-    [commandEncoder endEncoding];
-    [commandBuffer commit];
-    [commandBuffer waitUntilCompleted];
 }
+void conv::setConstant(void* constantP, id<MTLComputeCommandEncoder> commandEncoder){
+    [commandEncoder setBytes:constantP length:sizeof(convConstant) atIndex:4];
+}
+
+void conv::dispatch(void* constantP, id<MTLComputeCommandEncoder> commandEncoder){
+    convConstant* p = (convConstant*) constantP;
+    MTLSize threadGroupCounts = MTLSizeMake(1, 1, 1);
+    MTLSize threadgroups = MTLSizeMake(p->out_width , p->out_height,  (p->out_slice * p->out_batch));
+    [commandEncoder dispatchThreadgroups:threadgroups threadsPerThreadgroup:threadGroupCounts];
+}
+
+
+
+
+//void conv::execute(id<MTLBuffer> input, id<MTLBuffer> output, const convConstant& constant){
+//    id <MTLCommandBuffer> commandBuffer = [getResource()->getCommandQueue() commandBuffer];
+//    id <MTLComputeCommandEncoder> commandEncoder = [commandBuffer computeCommandEncoder];
+//    [commandEncoder setComputePipelineState:getPSO()];
+//    
+//    [commandEncoder setBuffer:input offset:0 atIndex:0];
+//    [commandEncoder setBuffer:output offset:0 atIndex:1];
+//    [commandEncoder setBuffer:weight_ offset:0 atIndex:2];
+//    [commandEncoder setBuffer:bias_ offset:0 atIndex:3];
+//    [commandEncoder setBytes:&constant length:sizeof(convConstant) atIndex:4];
+//    
+//    
+//    MTLSize threadGroupCounts = MTLSizeMake(1, 1, 1);
+//    MTLSize threadgroups = MTLSizeMake(constant.out_width , constant.out_height,  (constant.out_slice * constant.out_batch));
+//    
+//    
+//    [commandEncoder dispatchThreadgroups:threadgroups threadsPerThreadgroup:threadGroupCounts];
+//    [commandEncoder endEncoding];
+//    [commandBuffer commit];
+//    [commandBuffer waitUntilCompleted];
+//}
 
 shape conv::calOutShape(const shape& inShape, const convParams& params){
     shape outShape;

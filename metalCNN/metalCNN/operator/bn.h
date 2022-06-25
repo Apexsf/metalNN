@@ -15,7 +15,11 @@ public:
     bn(std::shared_ptr<gpuResource> resource, std::string name, uint channel);
     virtual void loadWeight(std::map<std::string, tensor>& weights) override;
     
-    void execute (id<MTLBuffer>input, id<MTLBuffer> output, const shape& shp);
+//    void execute (id<MTLBuffer>input, id<MTLBuffer> output, const shape& shp);
+    
+    virtual void setBuffer (std::vector<id<MTLBuffer>>& inOutBuffers, id<MTLComputeCommandEncoder> commandEncoder) override;
+    virtual void setConstant(void* constantP,  id<MTLComputeCommandEncoder> commandEncoder) override;
+    virtual void dispatch(void* constantP, id<MTLComputeCommandEncoder> commandEncoder) override;
     
     
 private:

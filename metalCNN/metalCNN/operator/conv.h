@@ -39,9 +39,11 @@ public:
         return params_;
     }
     
-    void execute(id<MTLBuffer> input, id<MTLBuffer> output, const convConstant& constant);
+//    void execute(id<MTLBuffer> input, id<MTLBuffer> output, const convConstant& constant);
     virtual void loadWeight(std::map<std::string, tensor>& weights) override;
-    
+    virtual void setBuffer (std::vector<id<MTLBuffer>>& inOutBuffers, id<MTLComputeCommandEncoder> commandEncoder) override;
+    virtual void setConstant(void* constantP,  id<MTLComputeCommandEncoder> commandEncoder) override;
+    virtual void dispatch(void* constantP, id<MTLComputeCommandEncoder> commandEncoder) override;
 private:
     id<MTLBuffer> weight_;
     id<MTLBuffer> bias_; // todo: taking bias into consideration
