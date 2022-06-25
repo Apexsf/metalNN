@@ -12,6 +12,9 @@
 #include "add.h"
 #include "conv.h"
 #include "bn.h"
+#include "act.h"
+
+std::shared_ptr<gpuResource> resource = std::make_shared<gpuResource>();
 
 void test_conv(){
     
@@ -29,7 +32,7 @@ void test_conv(){
     std::string weight_path = "/Users/tinglyfeng/Desktop/metalCNN/script/conv/weight.bin";
     std::string bias_path = "/Users/tinglyfeng/Desktop/metalCNN/script/conv/bias.bin";
 
-    std::shared_ptr<gpuResource> resource = std::make_shared<gpuResource>();
+
     tensor input_tensor(2,11,71,83);
     convParams convp{5,3,11,9,4,9,4,7};
     
@@ -103,7 +106,6 @@ void test_bn() {
     std::string rm_path =
         "/Users/tinglyfeng/Desktop/metalCNN/script/bn/running_mean.bin";
     std::string rv_path = "/Users/tinglyfeng/Desktop/metalCNN/script/bn/running_var.bin";
-    std::shared_ptr<gpuResource> resource = std::make_shared<gpuResource>();
     shape shp{2,64,67,67};
     tensor input_tensor(shp);
     input_tensor.loadFromFile(input_path.c_str());
@@ -114,7 +116,7 @@ void test_bn() {
     
     id<MTLBuffer> input_buffer = [resource->getDevice()
                                   newBufferWithLength:input_tensor.memSize() * sizeof(float) options:MTLResourceStorageModeShared];
-    id<MTLBuffer> output_buffer = [resource->getDevice() newBufferWithLength:output_tensor.memSize() * sizeof(float) options:MTLResourceStorageModeShared];
+    id<MTLBuffer> output_buffer = [resource->getDevice() newBufferWithLength:input_tensor.memSize() * sizeof(float) options:MTLResourceStorageModeShared];
     
     memcpy(input_buffer.contents, input_tensor.getRawPointer(), input_tensor.memSize() * sizeof(float));
     
@@ -166,9 +168,78 @@ void test_bn() {
     std::cout << "total diff : " << total_diff << std::endl;
     std::cout << "max diff : " << max_diff << std::endl;
 }
-int main() {
-    test_conv();
-    test_bn();
+
+
+id<MTLBuffer> makingInputBuffer(std::string input_path, const shape& shp){
+    tensor input_tensor(shp);
+    input_tensor.loadFromFile(input_path.c_str());
+    input_tensor.reInterpret(tensor::interpOrder::NC4HW4);
+    id<MTLBuffer> input_buffer = [resource->getDevice()
+                                  newBufferWithLength:input_tensor.memSize() * sizeof(float) options:MTLResourceStorageModeShared];
+    memcpy(input_buffer.contents, input_tensor.getRawPointer(), input_tensor.memSize() * sizeof(float));
+    return input_buffer;
+}
+
+tensor makingTorchOutTensorNCHW(std::string output_path, const shape& shp) {
+    tensor torchOutTensor(shp);
+    torchOutTensor.loadFromFile(output_path.c_str());
+    return torchOutTensor;
+}
+
+tensor makingMetalOutTensorNCHW(id<MTLBuffer> outBuffer, const shape& shp){
+    tensor metalOutTensor(shp);
+    metalOutTensor.loadFromMemory((float*)outBuffer.contents, tensor::interpOrder::NC4HW4   );
+    metalOutTensor.reInterpret(tensor::interpOrder::NCHW);
+    return metalOutTensor;
+}
+
+void diffProfile(float* p1, float* p2, size_t size){
+
+    float diff;
+    float total_diff = 0;
+    float max_diff = 0;
+    size_t diff_cnt = 0;
+    for(size_t i = 0; i < size; ++i){
+        diff = std::abs( (p1[i] - p2[i]) );
+        total_diff += diff;
+        max_diff = std::max(max_diff, diff);
+        if (p1[i] != p2[i]){
+            diff_cnt+=1;
+        }
+        if (total_diff > 1){
+            std::cout;
+        }
+    }
+    std::cout << "total diff : " << total_diff << std::endl;
+    std::cout << "max diff : " << max_diff << std::endl;
+}
+
+
+
+void test_act() {
+    std::string input_path = "/Users/tinglyfeng/Desktop/metalCNN/script/act/input.bin";
+    std::string output_path = "/Users/tinglyfeng/Desktop/metalCNN/script/act/out.bin";
+    shape shp{2,11,71,83};
+    id<MTLBuffer>  inputBuffer = makingInputBuffer(input_path, shp);
+    id<MTLBuffer> outputBuffer = [resource->getDevice() newBufferWithLength:inputBuffer.length options:MTLResourceStorageModeShared];
+    tensor torchOutTensor = makingTorchOutTensorNCHW(output_path, shp);
     
+    act reluOp(resource, std::string("relu"));
+    std::vector<id<MTLBuffer>> inOutBuffers{inputBuffer, outputBuffer};
+    reluConstant reluConst{(int)shp.batch, (int)divUp(shp.channel, 4), (int)shp.height, (int)shp.width};
+    reluOp.run(inOutBuffers, &reluConst);
+    
+    tensor metalOutTensor = makingMetalOutTensorNCHW(outputBuffer, shp);
+    
+    diffProfile(torchOutTensor.getRawPointer(), metalOutTensor.getRawPointer(), torchOutTensor.absSize());
+}
+
+int main() {
+//    test_conv();
+//    test_bn();
+    test_act();
+    
+
+
     
 }

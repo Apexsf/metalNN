@@ -18,6 +18,9 @@
 		09A1973128621AE300B6F74E /* bn.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09A1972F28621AE300B6F74E /* bn.mm */; };
 		09A197332864B3BC00B6F74E /* bn.metal in Sources */ = {isa = PBXBuildFile; fileRef = 09A197322864B3BC00B6F74E /* bn.metal */; };
 		09A197362866E94600B6F74E /* act.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09A197342866E94600B6F74E /* act.mm */; };
+		09A197392867064B00B6F74E /* act.metal in Sources */ = {isa = PBXBuildFile; fileRef = 09A197382867064B00B6F74E /* act.metal */; };
+		09A1973C2867084900B6F74E /* pooling.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09A1973A2867084900B6F74E /* pooling.mm */; };
+		09A1973E2867086800B6F74E /* pooling.metal in Sources */ = {isa = PBXBuildFile; fileRef = 09A1973D2867086800B6F74E /* pooling.metal */; };
 		09D80039285DB3540032DC00 /* utils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09D80037285DB3540032DC00 /* utils.mm */; };
 		09D8003C285DC2F00032DC00 /* tensor.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09D8003A285DC2F00032DC00 /* tensor.mm */; };
 		09D8004B285F45A00032DC00 /* metalConstant.metal in Sources */ = {isa = PBXBuildFile; fileRef = 09D8004A285F45A00032DC00 /* metalConstant.metal */; };
@@ -54,6 +57,10 @@
 		09A197322864B3BC00B6F74E /* bn.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = bn.metal; sourceTree = "<group>"; };
 		09A197342866E94600B6F74E /* act.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = act.mm; sourceTree = "<group>"; };
 		09A197352866E94600B6F74E /* act.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = act.h; sourceTree = "<group>"; };
+		09A197382867064B00B6F74E /* act.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = act.metal; sourceTree = "<group>"; };
+		09A1973A2867084900B6F74E /* pooling.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = pooling.mm; sourceTree = "<group>"; };
+		09A1973B2867084900B6F74E /* pooling.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pooling.h; sourceTree = "<group>"; };
+		09A1973D2867086800B6F74E /* pooling.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = pooling.metal; sourceTree = "<group>"; };
 		09D80037285DB3540032DC00 /* utils.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = utils.mm; sourceTree = "<group>"; };
 		09D80038285DB3540032DC00 /* utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
 		09D8003A285DC2F00032DC00 /* tensor.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = tensor.mm; sourceTree = "<group>"; };
@@ -115,6 +122,7 @@
 			isa = PBXGroup;
 			children = (
 				09A197352866E94600B6F74E /* act.h */,
+				09A197382867064B00B6F74E /* act.metal */,
 				09A197342866E94600B6F74E /* act.mm */,
 				0972B305285B7F0800812F87 /* add.h */,
 				0972B307285B80BF00812F87 /* add.metal */,
@@ -128,6 +136,9 @@
 				09D8004A285F45A00032DC00 /* metalConstant.metal */,
 				0972B2FF285B7B3400812F87 /* operator.h */,
 				0972B2FE285B7B3400812F87 /* operator.mm */,
+				09A1973B2867084900B6F74E /* pooling.h */,
+				09A1973D2867086800B6F74E /* pooling.metal */,
+				09A1973A2867084900B6F74E /* pooling.mm */,
 			);
 			path = operator;
 			sourceTree = "<group>";
@@ -211,6 +222,9 @@
 				0972B2EB285B76C700812F87 /* main.mm in Sources */,
 				0972B2F2285B76F600812F87 /* conv.metal in Sources */,
 				09A1973128621AE300B6F74E /* bn.mm in Sources */,
+				09A197392867064B00B6F74E /* act.metal in Sources */,
+				09A1973C2867084900B6F74E /* pooling.mm in Sources */,
+				09A1973E2867086800B6F74E /* pooling.metal in Sources */,
 				09A197362866E94600B6F74E /* act.mm in Sources */,
 				09D80039285DB3540032DC00 /* utils.mm in Sources */,
 				09A197332864B3BC00B6F74E /* bn.metal in Sources */,

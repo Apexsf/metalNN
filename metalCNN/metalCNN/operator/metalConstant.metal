@@ -39,4 +39,11 @@ struct bnConstant {
     int size;
 };
 
+struct reluConstant {
+    int batch;
+    int slice;
+    int height;
+    int width;
+};
+
 #endif

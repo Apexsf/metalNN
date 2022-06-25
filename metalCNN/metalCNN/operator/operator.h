@@ -43,7 +43,6 @@ public:
         return [resource_->getCommandQueue() commandBuffer];
     }
     
-
     virtual void setBuffer (std::vector<id<MTLBuffer>>& inOutBuffers, id<MTLComputeCommandEncoder> commandEncoder) = 0;
     virtual void setConstant(void* constantP, id<MTLComputeCommandEncoder> commandEncoder) = 0;
     virtual void dispatch(void* constantP, id<MTLComputeCommandEncoder> commandEncoder) = 0;
