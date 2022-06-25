@@ -13,6 +13,7 @@
 #include "conv.h"
 #include "bn.h"
 #include "act.h"
+#include "pooling.h"
 
 std::shared_ptr<gpuResource> resource = std::make_shared<gpuResource>();
 
@@ -226,7 +227,7 @@ void test_act() {
     
     act reluOp(resource, std::string("relu"));
     std::vector<id<MTLBuffer>> inOutBuffers{inputBuffer, outputBuffer};
-    reluConstant reluConst{(int)shp.batch, (int)divUp(shp.channel, 4), (int)shp.height, (int)shp.width};
+    actConstant reluConst{(int)shp.batch, (int)divUp(shp.channel, 4), (int)shp.height, (int)shp.width};
     reluOp.run(inOutBuffers, &reluConst);
     
     tensor metalOutTensor = makingMetalOutTensorNCHW(outputBuffer, shp);
@@ -234,10 +235,36 @@ void test_act() {
     diffProfile(torchOutTensor.getRawPointer(), metalOutTensor.getRawPointer(), torchOutTensor.absSize());
 }
 
+
+void test_pooling() {
+    std::string input_path = "/Users/tinglyfeng/Desktop/metalCNN/script/pooling/input.bin";
+    std::string output_path = "/Users/tinglyfeng/Desktop/metalCNN/script/pooling/out.bin";
+    shape inShape{2,11,71,83};
+    poolingParams poolingPara {9,7,4,3,4,7};
+//    shape inShape{2,7,16,16};
+//    poolingParams poolingPara{9,7,2,3,2,2};
+    poolingConstant poolingConst = pooling::makePoolingConstant(inShape, poolingPara);
+    shape outShape {(uint)poolingConst.out_batch, inShape.channel, (uint)poolingConst.out_height, (uint)poolingConst.out_width};
+    
+    id<MTLBuffer>  inputBuffer = makingInputBuffer(input_path, inShape);
+    id<MTLBuffer> outputBuffer = [resource->getDevice() newBufferWithLength:poolingConst.out_batch * poolingConst.out_slice * 4 * poolingConst.out_height * poolingConst.out_height * sizeof(float) options:MTLResourceStorageModeShared];
+    tensor torchOutTensor = makingTorchOutTensorNCHW(output_path, outShape);
+    
+    pooling poolingOp(resource, std::string("poolingMax"), poolingPara);
+    std::vector<id<MTLBuffer>> inOutBuffers{inputBuffer, outputBuffer};
+    poolingOp.run(inOutBuffers, &poolingConst);
+    
+    tensor metalOutTensor = makingMetalOutTensorNCHW(outputBuffer, outShape);
+    diffProfile(torchOutTensor.getRawPointer(), metalOutTensor.getRawPointer(), torchOutTensor.absSize());
+}
+
+
+
 int main() {
 //    test_conv();
 //    test_bn();
-    test_act();
+//    test_act();
+    test_pooling();
     
 
 

@@ -39,11 +39,33 @@ struct bnConstant {
     int size;
 };
 
-struct reluConstant {
+struct actConstant {
     int batch;
     int slice;
     int height;
     int width;
+};
+
+struct poolingConstant{
+    int in_batch;
+    int in_slice; // slice per batch
+    int in_size;  // size per slice, h*w
+    int in_height;
+    int in_width;
+    
+    int out_batch;
+    int out_slice; // slice per batch
+    int out_size;  //size per slice, h*w
+    int out_height;
+    int out_width;
+    
+    int kernel_h;
+    int kernel_w;
+    int kernel_size;
+    int stride_h;
+    int stride_w;
+    int pad_x;
+    int pad_y;
 };
 
 #endif

@@ -33,8 +33,8 @@ kernel void conv(const device float4* in[[buffer(0)]],
     int in_start_y_clip = max((int)in_start_y, 0);
     int in_end_x_clip = min(cp.in_width, in_start_x + cp.kernel_w);
     int in_end_y_clip = min(cp.in_height, in_start_y + cp.kernel_h);
-    in_end_x_clip = max(in_end_x_clip, 0); // in case padX is to big
-    in_end_y_clip = max(in_end_y_clip, 0); // in case padY is to big
+    in_end_x_clip = max(in_end_x_clip, 0); // in case padX is too big
+    in_end_y_clip = max(in_end_y_clip, 0); // in case padY is too big
     
     int kernelW = in_end_x_clip - in_start_x_clip;
     int kernelH = in_end_y_clip - in_start_y_clip;

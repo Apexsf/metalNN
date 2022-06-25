@@ -20,8 +20,8 @@ void act::setBuffer (std::vector<id<MTLBuffer>>& inOutBuffers, id<MTLComputeComm
 
 void act::setConstant(void* constantP,  id<MTLComputeCommandEncoder> commandEncoder) {
     if (actName_ == "relu") {
-        reluConstant* p = (reluConstant*) constantP;
-        [commandEncoder setBytes:p length:sizeof(reluConstant) atIndex:2];
+        actConstant* p = (actConstant*) constantP;
+        [commandEncoder setBytes:p length:sizeof(actConstant) atIndex:2];
     } else {
         std::cerr << "currently only support relu activation" << std::endl;
         abort();
@@ -30,7 +30,7 @@ void act::setConstant(void* constantP,  id<MTLComputeCommandEncoder> commandEnco
 
 
 void act::dispatch(void* constantP, id<MTLComputeCommandEncoder> commandEncoder) {
-    reluConstant* p = (reluConstant*) constantP;
+    actConstant* p = (actConstant*) constantP;
     MTLSize threadGroupCounts = MTLSizeMake(1, 1, 1);
     MTLSize threadgroups = MTLSizeMake(p->batch * p->slice * p->height * p->width, 1, 1);
     [commandEncoder dispatchThreadgroups:threadgroups threadsPerThreadgroup:threadGroupCounts];
