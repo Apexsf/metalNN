@@ -250,7 +250,7 @@ void test_pooling() {
     id<MTLBuffer> outputBuffer = [resource->getDevice() newBufferWithLength:poolingConst.out_batch * poolingConst.out_slice * 4 * poolingConst.out_height * poolingConst.out_height * sizeof(float) options:MTLResourceStorageModeShared];
     tensor torchOutTensor = makingTorchOutTensorNCHW(output_path, outShape);
     
-    pooling poolingOp(resource, std::string("poolingMax"), poolingPara);
+    pooling poolingOp(resource, std::string("poolingAvg"), poolingPara);
     std::vector<id<MTLBuffer>> inOutBuffers{inputBuffer, outputBuffer};
     poolingOp.run(inOutBuffers, &poolingConst);
     
