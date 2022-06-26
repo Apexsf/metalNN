@@ -24,5 +24,4 @@ kernel void bn(const device float4* in[[buffer(0)]],
     if ((int)idx >= (cp.batch * cp.slice * cp.size)) return;
     int idx_slice = (idx / cp.size) % cp.slice;
     out[idx] = (in[idx] - running_mean[idx_slice]) /  running_var_sqrt_with_eps[idx_slice] * gamma[idx_slice] + beta[idx_slice];
-//    out[idx] = in[idx];
 }

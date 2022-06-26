@@ -13,6 +13,11 @@
 class bn : public op {
 public:
     bn(std::shared_ptr<gpuResource> resource, std::string name, uint channel);
+    const id<MTLBuffer> getGamma() const {return gamma_;}
+    const id<MTLBuffer> getBeta() const {return beta_;}
+    const id<MTLBuffer> getRunningMean() const {return runningMean_;}
+    const id<MTLBuffer> getRunningVarSqrtWithEps() const {return runningVarSqrtWithEps_;}
+    
     virtual void loadWeight(std::map<std::string, tensor>& weights) override;
     
 //    void execute (id<MTLBuffer>input, id<MTLBuffer> output, const shape& shp);

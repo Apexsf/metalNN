@@ -21,6 +21,7 @@
 		09A1973E2867086800B6F74E /* pooling.metal in Sources */ = {isa = PBXBuildFile; fileRef = 09A1973D2867086800B6F74E /* pooling.metal */; };
 		09A197412868365600B6F74E /* elemWise.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09A1973F2868365600B6F74E /* elemWise.mm */; };
 		09A197432868394100B6F74E /* elemWise.metal in Sources */ = {isa = PBXBuildFile; fileRef = 09A197422868394100B6F74E /* elemWise.metal */; };
+		09A197472868416D00B6F74E /* convBnRelu.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09A197452868416D00B6F74E /* convBnRelu.mm */; };
 		09D80039285DB3540032DC00 /* utils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09D80037285DB3540032DC00 /* utils.mm */; };
 		09D8003C285DC2F00032DC00 /* tensor.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09D8003A285DC2F00032DC00 /* tensor.mm */; };
 		09D8004B285F45A00032DC00 /* metalConstant.metal in Sources */ = {isa = PBXBuildFile; fileRef = 09D8004A285F45A00032DC00 /* metalConstant.metal */; };
@@ -61,6 +62,8 @@
 		09A1973F2868365600B6F74E /* elemWise.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = elemWise.mm; sourceTree = "<group>"; };
 		09A197402868365600B6F74E /* elemWise.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = elemWise.h; sourceTree = "<group>"; };
 		09A197422868394100B6F74E /* elemWise.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = elemWise.metal; sourceTree = "<group>"; };
+		09A197452868416D00B6F74E /* convBnRelu.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = convBnRelu.mm; sourceTree = "<group>"; };
+		09A197462868416D00B6F74E /* convBnRelu.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = convBnRelu.h; sourceTree = "<group>"; };
 		09D80037285DB3540032DC00 /* utils.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = utils.mm; sourceTree = "<group>"; };
 		09D80038285DB3540032DC00 /* utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
 		09D8003A285DC2F00032DC00 /* tensor.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = tensor.mm; sourceTree = "<group>"; };
@@ -100,6 +103,7 @@
 		0972B2E9285B76C700812F87 /* metalCNN */ = {
 			isa = PBXGroup;
 			children = (
+				09A197442868400400B6F74E /* resnet */,
 				09D80040285E0A2F0032DC00 /* resource */,
 				09D8003F285DC7C90032DC00 /* core */,
 				0972B2EA285B76C700812F87 /* main.mm */,
@@ -116,6 +120,15 @@
 				0972B30A285B863C00812F87 /* Metal.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		09A197442868400400B6F74E /* resnet */ = {
+			isa = PBXGroup;
+			children = (
+				09A197452868416D00B6F74E /* convBnRelu.mm */,
+				09A197462868416D00B6F74E /* convBnRelu.h */,
+			);
+			path = resnet;
 			sourceTree = "<group>";
 		};
 		09D8003D285DC78B0032DC00 /* operator */ = {
@@ -233,6 +246,7 @@
 				0972B2F5285B770900812F87 /* conv.mm in Sources */,
 				09D8004B285F45A00032DC00 /* metalConstant.metal in Sources */,
 				0972B300285B7B3400812F87 /* operator.mm in Sources */,
+				09A197472868416D00B6F74E /* convBnRelu.mm in Sources */,
 				09D8003C285DC2F00032DC00 /* tensor.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

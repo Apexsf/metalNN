@@ -14,6 +14,7 @@
 #include "act.h"
 #include "pooling.h"
 #include "elemWise.h"
+#include "convBnRelu.h"
 
 std::shared_ptr<gpuResource> resource = std::make_shared<gpuResource>();
 
@@ -279,14 +280,79 @@ void test_elemWise() {
     diffProfile(torchOutTensor.getRawPointer(), metalOutTensor.getRawPointer(), torchOutTensor.absSize());
 }
 
+void test_convBnRelu() {
+    std::string input_path = "/Users/tinglyfeng/Desktop/metalCNN/script/convBnRelu/input.bin";
+    std::string output_path = "/Users/tinglyfeng/Desktop/metalCNN/script/convBnRelu/out.bin";
+    std::string weight_path = "/Users/tinglyfeng/Desktop/metalCNN/script/convBnRelu/weight.bin";
+    std::string bias_path = "/Users/tinglyfeng/Desktop/metalCNN/script/convBnRelu/bias.bin";
+    std::string gamma_path =
+        "/Users/tinglyfeng/Desktop/metalCNN/script/convBnRelu/gamma.bin";
+    std::string beta_path =
+        "/Users/tinglyfeng/Desktop/metalCNN/script/convBnRelu/beta.bin";
+    std::string rm_path =
+        "/Users/tinglyfeng/Desktop/metalCNN/script/convBnRelu/running_mean.bin";
+    std::string rv_path = "/Users/tinglyfeng/Desktop/metalCNN/script/convBnRelu/running_var.bin";
+    shape inShape {2,11,71,83};
+    convParams convPara{5,3,11,9,4,9,4,7};
+    convConstant convConst = conv::makeConvConstant(inShape, convPara);
+    bnConstant bnConst{convConst.out_batch, convConst.out_slice, convConst.out_height, convConst.out_width, convConst.out_size};
+    actConstant actConst{convConst.out_batch, convConst.out_slice, convConst.out_height, convConst.out_width};
+
+    id<MTLBuffer> inputBuffer = makingInputBuffer(input_path, inShape);
+    id<MTLBuffer> outputBuffer1 = [resource->getDevice() newBufferWithLength:convConst.out_batch * convConst.out_slice * 4 * convConst.out_height * convConst.out_height * sizeof(float) options:MTLResourceStorageModeShared];
+    id<MTLBuffer> outputBuffer2 = [resource->getDevice() newBufferWithLength:convConst.out_batch * convConst.out_slice * 4 * convConst.out_height * convConst.out_height * sizeof(float) options:MTLResourceStorageModeShared];
+    
+    convBnRelu CBR_OP(resource, convPara, convPara.outC);
+
+    tensor weight(convPara.outC,convPara.inC,convPara.kernelH, convPara.kernelW);
+    weight.loadFromFile(weight_path.c_str());
+    tensor bias(1, convPara.outC, 1,1);
+    bias.loadFromFile(bias_path.c_str());
+    std::map<std::string, tensor> convWeights = {
+        {"weight", std::move(weight)},
+        {"bias", std::move(bias)}
+    };
+    CBR_OP.conv_.loadWeight(convWeights);
+    
+    
+    uint bnChannel = convPara.outC;
+    tensor gamma(1,bnChannel,1,1);
+    tensor beta(1,bnChannel,1,1);
+    tensor rm(1,bnChannel,1,1);
+    tensor rv(1,bnChannel,1,1);
+    gamma.loadFromFile(gamma_path.c_str());
+    beta.loadFromFile(beta_path.c_str());
+    rm.loadFromFile(rm_path.c_str());
+    rv.loadFromFile(rv_path.c_str());
+    std::map<std::string, tensor> bnWeights = {
+        {"gamma", std::move(gamma)},
+        {"beta", std::move(beta)},
+        {"running_mean", std::move(rm)},
+        {"running_var", std::move(rv)}
+    };
+    
+    CBR_OP.bn_.loadWeight(bnWeights);
+    
+    CBR_OP.run(inputBuffer, outputBuffer1, outputBuffer2, convConst, bnConst, actConst);
+    
+    shape OutShape{(uint)convConst.out_batch, convPara.outC, (uint)convConst.out_height, (uint)convConst.out_width};
+    
+    tensor metalOutTensor = makingMetalOutTensorNCHW(outputBuffer1, OutShape);
+    tensor torchOutTensor = makingTorchOutTensorNCHW(output_path, OutShape);
+    
+    diffProfile(torchOutTensor.getRawPointer(), metalOutTensor.getRawPointer(), torchOutTensor.absSize());
+    
+}
+
 
 
 int main() {
 //    test_conv();
-//    test_bn();
+    test_bn();
 //    test_act();
 //    test_pooling();
-    test_elemWise();
+//    test_elemWise();
+//    test_convBnRelu();
     
 
 

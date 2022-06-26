@@ -32,7 +32,7 @@ void bn::loadWeight(std::map<std::string, tensor>& weights){
     src_p = weights["running_var"].getRawPointer();
     float* dst_p = (float*)runningVarSqrtWithEps_.contents;
     for(uint i = 0; i < channel_; ++i){
-        dst_p[i] = std::sqrt(src_p[i]) + 0.00001;
+        dst_p[i] = std::sqrt(src_p[i] + 0.00001) ;
     }
 //    memcpy(runningVar_.contents, src_p, channel_);
     
@@ -63,9 +63,9 @@ void bn::dispatch(void* constantP, id<MTLComputeCommandEncoder> commandEncoder){
 //    id <MTLCommandBuffer> commandBuffer = [getResource()->getCommandQueue() commandBuffer];
 //    id <MTLComputeCommandEncoder> commandEncoder = [commandBuffer computeCommandEncoder];
 //    [commandEncoder setComputePipelineState:getPSO()];
-//    
+//
 //    bnConstant cp{(int)shp.batch, (int)divUp(shp.channel, 4), (int)shp.width * (int)shp.height};
-//    
+//
 //    [commandEncoder setBuffer:input offset:0 atIndex:0];
 //    [commandEncoder setBuffer:output offset:0 atIndex:1];
 //    [commandEncoder setBuffer:gamma_ offset:0 atIndex:2];
@@ -73,15 +73,15 @@ void bn::dispatch(void* constantP, id<MTLComputeCommandEncoder> commandEncoder){
 //    [commandEncoder setBuffer:runningMean_ offset:0 atIndex:4];
 //    [commandEncoder setBuffer:runningVarSqrtWithEps_ offset:0 atIndex:5];
 //    [commandEncoder setBytes:&cp length:sizeof(bnConstant) atIndex:6];
-//    
-//    
+//
+//
 //    MTLSize threadGroupCounts = MTLSizeMake(1, 1, 1);
 //    MTLSize threadgroups = MTLSizeMake(shp.batch * divUp(shp.channel, 4) * shp.width * shp.height, 1, 1);
-//    
+//
 //    [commandEncoder dispatchThreadgroups:threadgroups threadsPerThreadgroup:threadGroupCounts];
-//    
+//
 //    [commandEncoder endEncoding];
 //    [commandBuffer commit];
 //    [commandBuffer waitUntilCompleted];
-//    
+//
 //}
