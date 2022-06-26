@@ -68,4 +68,12 @@ struct poolingConstant{
     int pad_y;
 };
 
+struct elemWiseConstant {
+    int batch;
+    int slice;
+    int height;
+    int width;
+    int size;
+};
+
 #endif

@@ -9,11 +9,11 @@
 #include <chrono>
 #include <iostream>
 #include <string>
-#include "add.h"
 #include "conv.h"
 #include "bn.h"
 #include "act.h"
 #include "pooling.h"
+#include "elemWise.h"
 
 std::shared_ptr<gpuResource> resource = std::make_shared<gpuResource>();
 
@@ -258,13 +258,35 @@ void test_pooling() {
     diffProfile(torchOutTensor.getRawPointer(), metalOutTensor.getRawPointer(), torchOutTensor.absSize());
 }
 
+void test_elemWise() {
+    std::string input1_path = "/Users/tinglyfeng/Desktop/metalCNN/script/elemWise/input1.bin";
+    std::string input2_path = "/Users/tinglyfeng/Desktop/metalCNN/script/elemWise/input2.bin";
+    std::string output_path = "/Users/tinglyfeng/Desktop/metalCNN/script/elemWise/out.bin";
+    shape shp{2,11,71,83};
+    id<MTLBuffer>  inputBuffer1 = makingInputBuffer(input1_path, shp);
+    id<MTLBuffer>  inputBuffer2 = makingInputBuffer(input2_path, shp);
+    id<MTLBuffer> outputBuffer = [resource->getDevice() newBufferWithLength:inputBuffer1.length options:MTLResourceStorageModeShared];
+    tensor torchOutTensor = makingTorchOutTensorNCHW(output_path, shp);
+    
+    elemWise elemWiseOp(resource, std::string("elemWiseMul"));
+    std::vector<id<MTLBuffer>> inOutBuffers{inputBuffer1, inputBuffer2, outputBuffer};
+    elemWiseConstant elemWiseConst{(int)shp.batch, (int)divUp(shp.channel, 4), (int)shp.height, (int)shp.width, (int)shp.width * (int)shp.height};
+    
+    elemWiseOp.run(inOutBuffers, &elemWiseConst);
+    
+    tensor metalOutTensor = makingMetalOutTensorNCHW(outputBuffer, shp);
+    
+    diffProfile(torchOutTensor.getRawPointer(), metalOutTensor.getRawPointer(), torchOutTensor.absSize());
+}
+
 
 
 int main() {
 //    test_conv();
 //    test_bn();
 //    test_act();
-    test_pooling();
+//    test_pooling();
+    test_elemWise();
     
 
 
