@@ -23,6 +23,9 @@ struct shape {
     uint size() const{
         return batch*channel*height*width;
     }
+    uint sizeNC4HW4() const {
+        return batch * roundUp(channel, 4) * height * width;
+    }
 };
 
 struct stride {

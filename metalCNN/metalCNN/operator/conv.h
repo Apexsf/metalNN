@@ -44,6 +44,7 @@ public:
     const id <MTLBuffer> getBias() const {
         return bias_;
     }
+ 
 //    void execute(id<MTLBuffer> input, id<MTLBuffer> output, const convConstant& constant);
     virtual void loadWeight(std::map<std::string, tensor>& weights) override;
     virtual void setBuffer (std::vector<id<MTLBuffer>>& inOutBuffers, id<MTLComputeCommandEncoder> commandEncoder) override;

@@ -9,8 +9,13 @@
 #define gpu_resource_h
 
 #import <Metal/Metal.h>
+#include <map>
+#include <vector>
 class gpuResource {
 public:
+    using  bufferVec_t = std::vector<id<MTLBuffer>> ;
+    using bufferMap_t = std::map<size_t, bufferVec_t>;
+    
     gpuResource(){
         device_ = MTLCreateSystemDefaultDevice();
         library_ = [device_ newDefaultLibrary];
@@ -29,9 +34,13 @@ public:
         return commandQueue_;
     }
     
+    id<MTLBuffer> getBuffer (size_t );
+    void putBuffer(size_t, id<MTLBuffer>);
+    
     
     
 private:
+    bufferMap_t bufferMap_;
     id <MTLDevice> device_;
     id <MTLLibrary> library_;
     id <MTLCommandQueue> commandQueue_;

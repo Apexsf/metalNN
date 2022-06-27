@@ -16,6 +16,7 @@
 #include "elemWise.h"
 #include "convBnRelu.h"
 
+
 std::shared_ptr<gpuResource> resource = std::make_shared<gpuResource>();
 
 void test_conv(){
@@ -344,16 +345,23 @@ void test_convBnRelu() {
     
 }
 
-
+void testBufferPool() {
+//    bufferPool pool (resource);
+//    id <MTLBuffer> buffer = pool.get(1000);
+//    pool.put(buffer.length / sizeof(float), buffer);
+    id<MTLBuffer> buffer = resource->getBuffer(1002);
+    resource->putBuffer(buffer.length / sizeof(float), buffer);
+    std::cout;
+}
 
 int main() {
 //    test_conv();
-    test_bn();
+//    test_bn();
 //    test_act();
 //    test_pooling();
 //    test_elemWise();
 //    test_convBnRelu();
-    
+    testBufferPool();
 
 
     

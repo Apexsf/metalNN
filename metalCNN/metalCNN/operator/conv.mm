@@ -90,18 +90,18 @@ void conv::dispatch(void* constantP, id<MTLComputeCommandEncoder> commandEncoder
 //    id <MTLCommandBuffer> commandBuffer = [getResource()->getCommandQueue() commandBuffer];
 //    id <MTLComputeCommandEncoder> commandEncoder = [commandBuffer computeCommandEncoder];
 //    [commandEncoder setComputePipelineState:getPSO()];
-//    
+//
 //    [commandEncoder setBuffer:input offset:0 atIndex:0];
 //    [commandEncoder setBuffer:output offset:0 atIndex:1];
 //    [commandEncoder setBuffer:weight_ offset:0 atIndex:2];
 //    [commandEncoder setBuffer:bias_ offset:0 atIndex:3];
 //    [commandEncoder setBytes:&constant length:sizeof(convConstant) atIndex:4];
-//    
-//    
+//
+//
 //    MTLSize threadGroupCounts = MTLSizeMake(1, 1, 1);
 //    MTLSize threadgroups = MTLSizeMake(constant.out_width , constant.out_height,  (constant.out_slice * constant.out_batch));
-//    
-//    
+//
+//
 //    [commandEncoder dispatchThreadgroups:threadgroups threadsPerThreadgroup:threadGroupCounts];
 //    [commandEncoder endEncoding];
 //    [commandBuffer commit];
