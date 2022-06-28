@@ -123,10 +123,36 @@ void test_bn() {
     
     memcpy(input_buffer.contents, input_tensor.getRawPointer(), input_tensor.memSize() * sizeof(float));
     
+//    NSString *path = @"/Users/tinglyfeng/Desktop/metalCNN/script/basicBlock/testData.json";
+//    NSData *data = [NSData dataWithContentsOfFile:path];
+//    NSError *error;
+//
+//    auto jsonObject = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+//    auto gammaW = jsonObject[@"weights"][@"gamma"];
+//    auto betaW = jsonObject[@"weights"][@"beta"];
+//    auto rmW = jsonObject[@"weights"][@"running_mean"];
+//    auto rvW = jsonObject[@"weights"][@"running_var"];
+//
+//    float gammaM[64];
+//    float betaM[64];
+//    float rmM[64];
+//    float rvM[64];
+//
+//    for(uint i = 0; i < 64; ++i){
+//        gammaM[i] = [[gammaW objectAtIndex:i]floatValue];
+//        betaM[i] = [[betaW objectAtIndex:i]floatValue];
+//        rmM[i] = [[rmW objectAtIndex:i]floatValue];
+//        rvM[i] = [[rvW objectAtIndex:i]floatValue];
+//    }
+//
     tensor gamma(1,shp.channel,1,1);
     tensor beta(1,shp.channel,1,1);
     tensor rm(1,shp.channel,1,1);
     tensor rv(1,shp.channel,1,1);
+//    gamma.loadFromMemory(gammaM, tensor::interpOrder::NCHW);
+//    beta.loadFromMemory(betaM, tensor::interpOrder::NCHW);
+//    rm.loadFromMemory(rmM, tensor::interpOrder::NCHW);
+//    rv.loadFromMemory(rvM, tensor::interpOrder::NCHW);
     gamma.loadFromFile(gamma_path.c_str());
     beta.loadFromFile(beta_path.c_str());
     rm.loadFromFile(rm_path.c_str());
@@ -345,6 +371,13 @@ void test_convBnRelu() {
     
 }
 
+
+
+
+
+
+
+
 void testBufferPool() {
 //    bufferPool pool (resource);
 //    id <MTLBuffer> buffer = pool.get(1000);
@@ -356,13 +389,17 @@ void testBufferPool() {
 
 int main() {
 //    test_conv();
-//    test_bn();
+    test_bn();
 //    test_act();
 //    test_pooling();
 //    test_elemWise();
 //    test_convBnRelu();
-    testBufferPool();
+//    testBufferPool();
 
-
-    
+    NSString *path = @"/Users/tinglyfeng/Desktop/metalCNN/script/basicBlock/testData.json";
+    NSData *data = [NSData dataWithContentsOfFile:path];
+    NSError *error;
+    NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+    NSDictionary *conv1Dict = jsonObject[@"conv1"];
+    return 0;
 }

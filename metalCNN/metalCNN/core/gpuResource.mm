@@ -15,7 +15,7 @@ id<MTLBuffer> gpuResource::getBuffer(size_t size) {
         bufferMap_[size].pop_back();
         return buffer;
     } else {
-        id <MTLBuffer> buffer = [device_ newBufferWithLength:size * sizeof(Float32) options:MTLResourceStorageModeShared];
+        id <MTLBuffer> buffer = [device_ newBufferWithLength:size * sizeof(float) options:MTLResourceStorageModeShared];
         return buffer;
     }
 }

@@ -112,9 +112,9 @@ shape conv::calOutShape(const shape& inShape, const convParams& params){
     shape outShape;
     outShape.batch = inShape.batch;
     outShape.channel = params.outC;
-    outShape.height = (inShape.height - params.kernelH + 2 * params.padY) / params.strideH + 1;
+    outShape.height = (inShape.height - params.kernelH + 2 * params.padH) / params.strideH + 1;
     outShape.width = (inShape.width - params.kernelW + 2 *
-                      params.padX) / params.strideW + 1;
+                      params.padW) / params.strideW + 1;
     return outShape;
 }
 
@@ -139,8 +139,8 @@ convConstant conv::makeConvConstant(const shape& inShape, const convParams& para
     constant.kernel_size = params.kernelW * params.kernelH;
     constant.stride_h = params.strideH;
     constant.stride_w = params.strideW;
-    constant.pad_x = params.padX;
-    constant.pad_y = params.padY;
+    constant.pad_x = params.padW;
+    constant.pad_y = params.padH;
     
     return constant;
     

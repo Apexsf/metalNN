@@ -21,8 +21,8 @@ struct convParams{
     uint kernelW;
     uint inC;
     uint outC;
-    uint padY;
-    uint padX;
+    uint padH;
+    uint padW;
     uint strideH;
     uint strideW;
 };

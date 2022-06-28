@@ -22,10 +22,11 @@ public:
                convParams& convPara2, uint bnChannel1, uint bnChannel2);
     void loadWeights(std::map<std::string, tensor>& convWeight1, std::map<std::string, tensor>& convWeight2, std::map<std::string, tensor>& bnWeights1, std::map<std::string, tensor>& bnWeights2);
     
+//    basicBlock(NSDictionary *infoFromJson);
+    
     id<MTLCommandBuffer> forward(id<MTLBuffer> input,shape& inShape,
                                  id<MTLCommandBuffer>*
                                  commandBufferP);
-    
 
 private:
     void makingConstantAndShape(shape& inShape);
@@ -55,5 +56,8 @@ public:
 private:
     std::shared_ptr<gpuResource> resource_;
 };
+
+basicBlock makingBasicBlock(NSDictionary *infoFromJson);
+convParams makingConvParams(NSDictionary* convParamsInfo);
 
 #endif /* resnet_h */

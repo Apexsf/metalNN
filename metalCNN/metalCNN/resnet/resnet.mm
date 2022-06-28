@@ -53,7 +53,7 @@ id<MTLCommandBuffer> basicBlock::forward(id<MTLBuffer> input,shape& inShape, id<
     id <MTLComputeCommandEncoder> convCommandEncoder1 = [commandBuffer computeCommandEncoder];
     [convCommandEncoder1 setComputePipelineState:conv1_.getPSO()];
     
-    id<MTLBuffer> interBuffer1 = resource_->getBuffer(convConst1_.out_batch * convConst1_.out_slice * 4 * convConst1_.out_width * convConst1_.out_height);
+    id<MTLBuffer> interBuffer1 = resource_->getBuffer(convConst1_.out_batch * convConst1_.out_slice * 4 * convConst1_.out_size);
     std::vector<id<MTLBuffer>> inOutBuffers {input, interBuffer1};
     conv1_.setBuffer(inOutBuffers, convCommandEncoder1);
     conv1_.setConstant(&convConst1_, convCommandEncoder1);
@@ -88,12 +88,37 @@ id<MTLCommandBuffer> basicBlock::forward(id<MTLBuffer> input,shape& inShape, id<
     
     
     // encode conv2
+    id <MTLComputeCommandEncoder> convCommandEncoder2 = [commandBuffer computeCommandEncoder];
+    [convCommandEncoder2 setComputePipelineState:conv2_.getPSO()];
+    id<MTLBuffer> interBuffer2 = resource_->getBuffer(convConst2_.out_batch * convConst2_.out_slice * 4 * convConst2_.out_size);
+    inOutBuffers = {interBuffer1, interBuffer2};
+    conv2_.setBuffer(inOutBuffers, convCommandEncoder2);
+    conv2_.setConstant(&convConst2_, convCommandEncoder2);
     
+    threadGroupCounts = MTLSizeMake(1, 1, 1);
+    threadgroups = MTLSizeMake(convConst2_.out_width , convConst2_.out_height,  (convConst2_.out_slice * convConst2_.out_batch));
+    [convCommandEncoder2 dispatchThreadgroups:threadgroups threadsPerThreadgroup: threadGroupCounts];
+    [convCommandEncoder2 endEncoding];
     
-    
+    // encode bn2
+    id<MTLComputeCommandEncoder> bnCommandEncoder2 = [commandBuffer computeCommandEncoder];
+    [bnCommandEncoder2 setComputePipelineState:bn2_.getPSO()];
+    inOutBuffers = {interBuffer2, interBuffer2};
+    bn2_.setBuffer(inOutBuffers, bnCommandEncoder2);
+    bn2_.setConstant(&bnConst2_, bnCommandEncoder2);
+    threadGroupCounts = MTLSizeMake(1, 1, 1);
+    threadgroups = MTLSizeMake(bnConst2_.batch * bnConst2_.slice * bnConst2_.height * bnConst2_.width, 1, 1);
+    [bnCommandEncoder2  dispatchThreadgroups:threadgroups threadsPerThreadgroup:threadGroupCounts];
+    [bnCommandEncoder2 endEncoding];
     
     
     return commandBuffer;
     
     
 }
+
+
+//basicBlock makingBasicBlock(NSDictionary *infoFromJson) {
+//    NSDictionary* conv1Info = infoFromJson[@"conv1"];
+//    
+//}
