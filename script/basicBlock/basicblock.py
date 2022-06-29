@@ -43,10 +43,12 @@ def makeConvDict(conv, baseName):
         bias = conv.bias.data.detach().flatten().float().tolist()
 
     weight_path = os.path.join(weight_dir, "{}_conv.bin".format(baseName))
+    weight_path = os.path.abspath(weight_path)
     conv.weight.data.detach().flatten().numpy().tofile(weight_path)
     bias_path = ""
     if is_bias:
         bias_path = os.path.join(weight_dir, "{}_bn.bin".format(baseName))
+        bias_path = os.path.abspath(bias_path)
         conv.bias.data.detach().flatten().numpy().tofile(bias_path)
 
 
@@ -65,7 +67,11 @@ def makeBnDict(bn, baseName):
     rm_path = os.path.join(weight_dir, "{}_rm.bin".format(baseName))
     rv_path = os.path.join(weight_dir, "{}_rv.bin".format(baseName))
 
-    
+    gamma_path = os.path.abspath(gamma_path)
+    beta_path = os.path.abspath(beta_path)
+    rm_path = os.path.abspath(rm_path)
+    rv_path = os.path.abspath(rv_path)
+
 
     gamma.numpy().tofile(gamma_path)
     beta.numpy().tofile(beta_path)
@@ -99,7 +105,22 @@ basicBlockDict = {
 }
 with open("testData.json", 'w') as f:
     json.dump(basicBlockDict, f)
+
+
+
+conv1 = basic_block.conv1
+conv2 = basic_block.conv2
+bn1 = basic_block.bn1
+bn2 = basic_block.bn2
+relu = basic_block.relu
+
+out =  bn2(conv2(relu(bn1(conv1(x)))))
+# out = conv1(x)
+
+x.detach().flatten().numpy().tofile("input.bin")
+out.detach().flatten().numpy().tofile('out.bin')
 print()
+
 # save_conv_weights(basic_block.conv1, dir = weight_dir, name = 'conv1')
 # save_conv_weights(basic_block.conv2, dir = weight_dir, name = 'conv2')
 

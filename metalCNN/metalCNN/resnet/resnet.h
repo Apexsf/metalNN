@@ -24,12 +24,14 @@ public:
     
 //    basicBlock(NSDictionary *infoFromJson);
     
-    id<MTLCommandBuffer> forward(id<MTLBuffer> input,shape& inShape,
+    id<MTLCommandBuffer> forward(const id<MTLBuffer> input,
+                                 const shape& inShape,
+                                 id <MTLBuffer> output,
                                  id<MTLCommandBuffer>*
                                  commandBufferP);
-
+    
 private:
-    void makingConstantAndShape(shape& inShape);
+    void makingConstantAndShape(const shape& inShape);
     std::shared_ptr<gpuResource> resource_;
     conv conv1_;
     bn bn1_;
@@ -57,7 +59,13 @@ private:
     std::shared_ptr<gpuResource> resource_;
 };
 
-basicBlock makingBasicBlock(NSDictionary *infoFromJson);
+basicBlock makingBasicBlock(std::shared_ptr<gpuResource> resource ,NSDictionary *infoFromJson);
 convParams makingConvParams(NSDictionary* convParamsInfo);
+std::map<std::string, tensor> makingConvWeight (NSDictionary* convWeightInfo, convParams params);
+
+
+uint makingBnParams (NSDictionary* bnParamsInfo);
+std::map<std::string, tensor>  makingBnWeight (NSDictionary* bnWeightInfo,
+                                               uint params);
 
 #endif /* resnet_h */

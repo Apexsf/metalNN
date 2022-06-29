@@ -15,6 +15,7 @@
 #include "pooling.h"
 #include "elemWise.h"
 #include "convBnRelu.h"
+#include "resnet.h"
 
 
 std::shared_ptr<gpuResource> resource = std::make_shared<gpuResource>();
@@ -373,11 +374,6 @@ void test_convBnRelu() {
 
 
 
-
-
-
-
-
 void testBufferPool() {
 //    bufferPool pool (resource);
 //    id <MTLBuffer> buffer = pool.get(1000);
@@ -387,19 +383,50 @@ void testBufferPool() {
     std::cout;
 }
 
+void testBasicBlock(){
+    NSString *path = @"/Users/tinglyfeng/Desktop/metalCNN/script/basicBlock/testData.json";
+    NSData *data = [NSData dataWithContentsOfFile:path];
+    NSError *error;
+    NSDictionary *basicBlockInfo = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+    
+    basicBlock block = makingBasicBlock(resource, basicBlockInfo);
+    std::string input_path = "/Users/tinglyfeng/Desktop/metalCNN/script/basicBlock/input.bin";
+    std::string output_path = "/Users/tinglyfeng/Desktop/metalCNN/script/basicBlock/out.bin";
+    shape inShape {2,64,100,100};
+    shape outShape {2,64,100,100};
+    id <MTLBuffer> inputBuffer = makingInputBuffer(input_path, inShape);
+    id <MTLBuffer> outputBuffer = resource->getBuffer(outShape.size());
+    
+    id<MTLCommandBuffer> commandBuffer = block.forward(inputBuffer, inShape, outputBuffer, nullptr);
+    [commandBuffer commit];
+    [commandBuffer waitUntilCompleted];
+    tensor metalOutTensor = makingMetalOutTensorNCHW(outputBuffer, outShape);
+
+    tensor torchOutTensor = makingTorchOutTensorNCHW(output_path, outShape);
+    diffProfile(torchOutTensor.getRawPointer(), metalOutTensor.getRawPointer(), torchOutTensor.absSize());
+    
+    
+}
+
 int main() {
 //    test_conv();
-    test_bn();
+//    test_bn();
 //    test_act();
 //    test_pooling();
 //    test_elemWise();
 //    test_convBnRelu();
 //    testBufferPool();
+    testBasicBlock();
 
     NSString *path = @"/Users/tinglyfeng/Desktop/metalCNN/script/basicBlock/testData.json";
     NSData *data = [NSData dataWithContentsOfFile:path];
     NSError *error;
     NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
     NSDictionary *conv1Dict = jsonObject[@"conv1"];
+    auto a = conv1Dict[@"params"][@"kernelH"];
+    auto cc = conv1Dict[@"weights"][@"weight"];
+    auto cs = [cc cString];
+//    auto b =[a intValue];
+    auto b = [a intValue];
     return 0;
 }
