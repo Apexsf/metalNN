@@ -77,7 +77,7 @@ id<MTLCommandBuffer> basicBlock::forward(const id<MTLBuffer> input,
     threadgroups = MTLSizeMake(bnConst1_.batch * bnConst1_.slice * bnConst1_.height * bnConst1_.width, 1, 1);
     [bnCommandEncoder1 dispatchThreadgroups:threadgroups threadsPerThreadgroup:threadGroupCounts];
     [bnCommandEncoder1 endEncoding];
-    
+ 
     
     //encode relu
     id<MTLComputeCommandEncoder> reluCommandEncoder = [commandBuffer computeCommandEncoder];
@@ -89,6 +89,7 @@ id<MTLCommandBuffer> basicBlock::forward(const id<MTLBuffer> input,
     threadgroups = MTLSizeMake(actConst_.batch * actConst_.slice * actConst_.height * actConst_.width, 1, 1);
     [reluCommandEncoder dispatchThreadgroups:threadgroups threadsPerThreadgroup:threadGroupCounts];
     [reluCommandEncoder endEncoding];
+    
     
     
     // encode conv2
@@ -140,7 +141,7 @@ basicBlock makingBasicBlock(std::shared_ptr<gpuResource> resource, NSDictionary 
     std::map<std::string, tensor> bn2Weights = makingBnWeight(bn2Info[@"weights"], bn2Channel);
     
     basicBlock block(resource, conv1Param, conv2Param, bn1Channel, bn2Channel);
-    block.loadWeights(conv2Weights, conv2Weights, bn1Weights, bn2Weights);
+    block.loadWeights(conv1Weights, conv2Weights, bn1Weights, bn2Weights);
     return block;
 }
 

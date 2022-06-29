@@ -116,6 +116,8 @@ relu = basic_block.relu
 
 out =  bn2(conv2(relu(bn1(conv1(x)))))
 # out = conv1(x)
+# out = bn1(conv1(x))
+# out = relu(bn1(conv1(x)))
 
 x.detach().flatten().numpy().tofile("input.bin")
 out.detach().flatten().numpy().tofile('out.bin')
