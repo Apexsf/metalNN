@@ -47,7 +47,9 @@ public:
     virtual void setConstant(void* constantP, id<MTLComputeCommandEncoder> commandEncoder) = 0;
     virtual void dispatch(void* constantP, id<MTLComputeCommandEncoder> commandEncoder) = 0;
     
-    void run(std::vector<id<MTLBuffer>>& inOutBuffers, void* constantP);
+    void runOnce(std::vector<id<MTLBuffer>>& inOutBuffers, void* constantP);
+    void encodeCommand(std::vector<id<MTLBuffer>>& inOutBuffers, void* constantP,
+                       id<MTLCommandBuffer> commandBuffer);
     
     virtual void loadWeight(std::map<std::string, tensor>& weights) = 0;
 private:

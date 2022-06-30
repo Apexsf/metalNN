@@ -57,77 +57,42 @@ id<MTLCommandBuffer> basicBlock::forward(const id<MTLBuffer> input,
     
     
     // encode conv1
-    id <MTLComputeCommandEncoder> convCommandEncoder1 = [commandBuffer computeCommandEncoder];
-    [convCommandEncoder1 setComputePipelineState:conv1_.getPSO()];
-    
     id<MTLBuffer> interBuffer1 = resource_->getBuffer(convConst1_.out_batch * convConst1_.out_slice * 4 * convConst1_.out_size);
     std::vector<id<MTLBuffer>> inOutBuffers {input, interBuffer1};
-    conv1_.setBuffer(inOutBuffers, convCommandEncoder1);
-    conv1_.setConstant(&convConst1_, convCommandEncoder1);
-    conv1_.dispatch(&convConst1_, convCommandEncoder1);
-    
-    [convCommandEncoder1 endEncoding];
+    conv1_.encodeCommand(inOutBuffers, &convConst1_, commandBuffer);
     
     
     // encode bn1
-    id<MTLComputeCommandEncoder> bnCommandEncoder1 = [commandBuffer computeCommandEncoder];
-    [bnCommandEncoder1 setComputePipelineState:bn1_.getPSO()];
     inOutBuffers = {interBuffer1, interBuffer1};
-    bn1_.setBuffer(inOutBuffers, bnCommandEncoder1);
-    bn1_.setConstant(&bnConst1_, bnCommandEncoder1);
-    bn1_.dispatch(&bnConst1_, bnCommandEncoder1);
-    [bnCommandEncoder1 endEncoding];
+    bn1_.encodeCommand(inOutBuffers, &bnConst1_, commandBuffer);
+
  
     
     //encode relu
-    id<MTLComputeCommandEncoder> reluCommandEncoder = [commandBuffer computeCommandEncoder];
-    [reluCommandEncoder setComputePipelineState:relu_.getPSO()];
     inOutBuffers = {interBuffer1, interBuffer1};
-    relu_.setBuffer(inOutBuffers, reluCommandEncoder);
-    relu_.setConstant(&actConst1_, reluCommandEncoder);
-    relu_.dispatch(&actConst1_, reluCommandEncoder);
-    [reluCommandEncoder endEncoding];
-    
-    
+    relu_.encodeCommand(inOutBuffers, &actConst1_, commandBuffer);
+
     
     // encode conv2
-    id <MTLComputeCommandEncoder> convCommandEncoder2 = [commandBuffer computeCommandEncoder];
-    [convCommandEncoder2 setComputePipelineState:conv2_.getPSO()];
     id<MTLBuffer> interBuffer2 = resource_->getBuffer(convConst2_.out_batch * convConst2_.out_slice * 4 * convConst2_.out_size);
     inOutBuffers = {interBuffer1, interBuffer2};
-    conv2_.setBuffer(inOutBuffers, convCommandEncoder2);
-    conv2_.setConstant(&convConst2_, convCommandEncoder2);
-    conv2_.dispatch(&convConst2_, convCommandEncoder2);
-    [convCommandEncoder2 endEncoding];
+    conv2_.encodeCommand(inOutBuffers, &convConst2_, commandBuffer);
+
     
     // encode bn2
-    id<MTLComputeCommandEncoder> bnCommandEncoder2 = [commandBuffer computeCommandEncoder];
-    [bnCommandEncoder2 setComputePipelineState:bn2_.getPSO()];
     inOutBuffers = {interBuffer2, interBuffer2};
-    bn2_.setBuffer(inOutBuffers, bnCommandEncoder2);
-    bn2_.setConstant(&bnConst2_, bnCommandEncoder2);
-    bn2_.dispatch(&bnConst2_, bnCommandEncoder2);
-    [bnCommandEncoder2 endEncoding];
+    bn2_.encodeCommand(inOutBuffers, &bnConst2_, commandBuffer);
+
     
     
     // encode add
-    id <MTLComputeCommandEncoder> addCommandEncoder = [commandBuffer computeCommandEncoder];
-    [addCommandEncoder setComputePipelineState:add_.getPSO()];
     inOutBuffers = {input, interBuffer2, output};
-    add_.setBuffer(inOutBuffers, addCommandEncoder);
-    add_.setConstant(&addConst_, addCommandEncoder);
-    add_.dispatch(&addConst_, addCommandEncoder);
-    [addCommandEncoder endEncoding];
-    
+    add_.encodeCommand(inOutBuffers, &addConst_, commandBuffer);
+
 
     // encode relu
-    id<MTLComputeCommandEncoder> relu2CommandEncoder = [commandBuffer computeCommandEncoder];
-    [relu2CommandEncoder setComputePipelineState:relu_.getPSO()];
     inOutBuffers = {output, output};
-    relu_.setBuffer(inOutBuffers, relu2CommandEncoder);
-    relu_.setConstant(&actConst2_, relu2CommandEncoder);
-    relu_.dispatch(&actConst2_, relu2CommandEncoder);
-    [relu2CommandEncoder endEncoding];
+    relu_.encodeCommand(inOutBuffers, &actConst2_, commandBuffer);
     
     return commandBuffer;
     

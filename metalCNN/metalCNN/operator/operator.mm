@@ -13,16 +13,21 @@ id<MTLBuffer> op:: makingBuffer(size_t byteSize, int mode){
 }
 
 
-void op::run(std::vector<id<MTLBuffer>>& inOutBuffers, void* constantP){
-    id<MTLCommandBuffer> commandBuffer = newCommandBuffer();
+
+void op::encodeCommand(std::vector<id<MTLBuffer>>& inOutBuffers, void* constantP,
+                       id<MTLCommandBuffer> commandBuffer) {
     id<MTLComputeCommandEncoder> commandEncoder = [commandBuffer computeCommandEncoder];
     [commandEncoder setComputePipelineState:getPSO()];
-    
     setBuffer(inOutBuffers, commandEncoder);
     setConstant(constantP, commandEncoder);
     dispatch(constantP, commandEncoder);
-    
     [commandEncoder endEncoding];
+}
+
+
+void op::runOnce(std::vector<id<MTLBuffer>>& inOutBuffers, void* constantP){
+    id<MTLCommandBuffer> commandBuffer = newCommandBuffer();
+    encodeCommand(inOutBuffers, constantP, commandBuffer);
     [commandBuffer commit];
     [commandBuffer waitUntilCompleted];
 }

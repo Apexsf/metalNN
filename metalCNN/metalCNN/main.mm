@@ -76,7 +76,7 @@ void test_conv(){
     
     std::vector<id<MTLBuffer>> inOutBuffers{inBuffer, outBuffer};
     convConstant convConst = conv::makeConvConstant(input_tensor.getShape(), convp);
-    conv_op.run(inOutBuffers, &convConst);
+    conv_op.runOnce(inOutBuffers, &convConst);
     
     
     tensor output_tensor(outShape);
@@ -170,7 +170,7 @@ void test_bn() {
     bn_op.loadWeight(bnWeights);
     std::vector<id<MTLBuffer>> inOutBuffers{input_buffer, output_buffer};
     bnConstant bnC{2,(int)divUp(shp.channel, 4), (int)shp.height, (int)shp.width, (int)(shp.height * shp.width)};
-    bn_op.run(inOutBuffers, &bnC);
+    bn_op.runOnce(inOutBuffers, &bnC);
     
     tensor cmlout_tensor(shp);
     cmlout_tensor.loadFromMemory((float*)output_buffer.contents, tensor::interpOrder::NC4HW4);
@@ -257,7 +257,7 @@ void test_act() {
     act reluOp(resource, std::string("relu"));
     std::vector<id<MTLBuffer>> inOutBuffers{inputBuffer, outputBuffer};
     actConstant reluConst{(int)shp.batch, (int)divUp(shp.channel, 4), (int)shp.height, (int)shp.width};
-    reluOp.run(inOutBuffers, &reluConst);
+    reluOp.runOnce(inOutBuffers, &reluConst);
     
     tensor metalOutTensor = makingMetalOutTensorNCHW(outputBuffer, shp);
     
@@ -281,7 +281,7 @@ void test_pooling() {
     
     pooling poolingOp(resource, std::string("poolingAvg"), poolingPara);
     std::vector<id<MTLBuffer>> inOutBuffers{inputBuffer, outputBuffer};
-    poolingOp.run(inOutBuffers, &poolingConst);
+    poolingOp.runOnce(inOutBuffers, &poolingConst);
     
     tensor metalOutTensor = makingMetalOutTensorNCHW(outputBuffer, outShape);
     diffProfile(torchOutTensor.getRawPointer(), metalOutTensor.getRawPointer(), torchOutTensor.absSize());
@@ -301,7 +301,7 @@ void test_elemWise() {
     std::vector<id<MTLBuffer>> inOutBuffers{inputBuffer1, inputBuffer2, outputBuffer};
     elemWiseConstant elemWiseConst{(int)shp.batch, (int)divUp(shp.channel, 4), (int)shp.height, (int)shp.width, (int)shp.width * (int)shp.height};
     
-    elemWiseOp.run(inOutBuffers, &elemWiseConst);
+    elemWiseOp.runOnce(inOutBuffers, &elemWiseConst);
     
     tensor metalOutTensor = makingMetalOutTensorNCHW(outputBuffer, shp);
     
