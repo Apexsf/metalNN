@@ -23,6 +23,7 @@
 		09A197432868394100B6F74E /* elemWise.metal in Sources */ = {isa = PBXBuildFile; fileRef = 09A197422868394100B6F74E /* elemWise.metal */; };
 		09A197472868416D00B6F74E /* convBnRelu.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09A197452868416D00B6F74E /* convBnRelu.mm */; };
 		09A1974D2869D63600B6F74E /* resnet.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09A1974B2869D63600B6F74E /* resnet.mm */; };
+		09A19750286DA22200B6F74E /* basicBlock.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09A1974E286DA22200B6F74E /* basicBlock.mm */; };
 		09D80039285DB3540032DC00 /* utils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09D80037285DB3540032DC00 /* utils.mm */; };
 		09D8003C285DC2F00032DC00 /* tensor.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09D8003A285DC2F00032DC00 /* tensor.mm */; };
 		09D8004B285F45A00032DC00 /* metalConstant.metal in Sources */ = {isa = PBXBuildFile; fileRef = 09D8004A285F45A00032DC00 /* metalConstant.metal */; };
@@ -67,6 +68,8 @@
 		09A197462868416D00B6F74E /* convBnRelu.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = convBnRelu.h; sourceTree = "<group>"; };
 		09A1974B2869D63600B6F74E /* resnet.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = resnet.mm; sourceTree = "<group>"; };
 		09A1974C2869D63600B6F74E /* resnet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = resnet.h; sourceTree = "<group>"; };
+		09A1974E286DA22200B6F74E /* basicBlock.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = basicBlock.mm; sourceTree = "<group>"; };
+		09A1974F286DA22200B6F74E /* basicBlock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = basicBlock.h; sourceTree = "<group>"; };
 		09D80037285DB3540032DC00 /* utils.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = utils.mm; sourceTree = "<group>"; };
 		09D80038285DB3540032DC00 /* utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
 		09D8003A285DC2F00032DC00 /* tensor.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = tensor.mm; sourceTree = "<group>"; };
@@ -130,6 +133,8 @@
 			children = (
 				09A197452868416D00B6F74E /* convBnRelu.mm */,
 				09A197462868416D00B6F74E /* convBnRelu.h */,
+				09A1974E286DA22200B6F74E /* basicBlock.mm */,
+				09A1974F286DA22200B6F74E /* basicBlock.h */,
 				09A1974B2869D63600B6F74E /* resnet.mm */,
 				09A1974C2869D63600B6F74E /* resnet.h */,
 			);
@@ -243,6 +248,7 @@
 				09A197392867064B00B6F74E /* act.metal in Sources */,
 				09A1973C2867084900B6F74E /* pooling.mm in Sources */,
 				09A1973E2867086800B6F74E /* pooling.metal in Sources */,
+				09A19750286DA22200B6F74E /* basicBlock.mm in Sources */,
 				09A197362866E94600B6F74E /* act.mm in Sources */,
 				09D80039285DB3540032DC00 /* utils.mm in Sources */,
 				09A197332864B3BC00B6F74E /* bn.metal in Sources */,

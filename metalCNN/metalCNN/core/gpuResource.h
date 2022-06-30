@@ -35,11 +35,13 @@ public:
     }
     
     id<MTLBuffer> getBuffer (size_t );
+    void putBuffer(id<MTLBuffer>);
     void putBuffer(size_t, id<MTLBuffer>);
     
     
     
 private:
+
     bufferMap_t bufferMap_;
     id <MTLDevice> device_;
     id <MTLLibrary> library_;

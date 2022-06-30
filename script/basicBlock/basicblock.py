@@ -108,15 +108,17 @@ with open("testData.json", 'w') as f:
 
 
 
-conv1 = basic_block.conv1
-conv2 = basic_block.conv2
-bn1 = basic_block.bn1
-bn2 = basic_block.bn2
-relu = basic_block.relu
+# conv1 = basic_block.conv1
+# conv2 = basic_block.conv2
+# bn1 = basic_block.bn1
+# bn2 = basic_block.bn2
+# relu = basic_block.relu
 
-out =  bn2(conv2(relu(bn1(conv1(x)))))
-out = out + x
-out = relu(out)
+# out =  bn2(conv2(relu(bn1(conv1(x)))))
+# out = out + x
+# out = relu(out)
+
+out = basic_block(x)
 # out = conv1(x)
 # out = bn1(conv1(x))
 # out = relu(bn1(conv1(x)))

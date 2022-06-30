@@ -23,3 +23,7 @@ id<MTLBuffer> gpuResource::getBuffer(size_t size) {
 void gpuResource::putBuffer(size_t size, id<MTLBuffer> buffer) {
     bufferMap_[size].push_back(buffer);
 }
+
+void gpuResource::putBuffer(id<MTLBuffer> buffer) {
+    putBuffer(buffer.length / sizeof(float), buffer);
+}
