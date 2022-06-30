@@ -28,13 +28,6 @@ private:
     std::shared_ptr<gpuResource> resource_;
 };
 
-basicBlock makingBasicBlock(std::shared_ptr<gpuResource> resource ,NSDictionary *infoFromJson);
-convParams makingConvParams(NSDictionary* convParamsInfo);
-std::map<std::string, tensor> makingConvWeight (NSDictionary* convWeightInfo, convParams params);
 
-
-uint makingBnParams (NSDictionary* bnParamsInfo);
-std::map<std::string, tensor>  makingBnWeight (NSDictionary* bnWeightInfo,
-                                               uint params);
 
 #endif /* resnet_h */

@@ -7,6 +7,7 @@
 
 #ifndef basicBlock_h
 #define basicBlock_h
+
 #include "gpuResource.h"
 #include "conv.h"
 #include "bn.h"
@@ -18,7 +19,12 @@ public:
     
     basicBlock(std::shared_ptr<gpuResource> resource, convParams& convPara1,
                convParams& convPara2, uint bnChannel1, uint bnChannel2);
+//    basicBlock(std::shared_ptr<gpuResource> resource, NSDictionary* blockInfo);
     void loadWeights(std::map<std::string, tensor>& convWeight1, std::map<std::string, tensor>& convWeight2, std::map<std::string, tensor>& bnWeights1, std::map<std::string, tensor>& bnWeights2);
+    
+    void setDownSampleModule(convParams& convPara3, uint bnChannel3,
+                             std::map<std::string, tensor>& convWeight3,
+                             std::map<std::string, tensor>& bnWeight3);
     
 //    basicBlock(NSDictionary *infoFromJson);
     
@@ -28,16 +34,22 @@ public:
                                  id<MTLCommandBuffer>*
                                  commandBufferP);
     
+    ~basicBlock();
 private:
+    void cleanDownSampleModule();
     void makingConstantAndShape(const shape& inShape);
     std::shared_ptr<gpuResource> resource_;
     conv conv1_;
-    bn bn1_;
-    act relu_;
     conv conv2_;
+    bn bn1_;
     bn bn2_;
-    
+    act relu_;
     elemWise add_;
+    
+    bool hasDownSample_ = false;
+    conv* conv3P_ = nullptr; // perform downsample if exists
+    bn* bn3P_ = nullptr; // perform downsample if exists
+    convConstant* convConst3_ = nullptr; // perform downsample if exists
     
     convConstant convConst1_;
     convConstant convConst2_;
@@ -50,5 +62,15 @@ private:
     shape outShape1_;  // output shape from conv1
     shape outShape2_; // output shape from conv2
 };
+
+
+basicBlock makingBasicBlock(std::shared_ptr<gpuResource> resource ,NSDictionary *infoFromJson);
+convParams makingConvParams(NSDictionary* convParamsInfo);
+std::map<std::string, tensor> makingConvWeight (NSDictionary* convWeightInfo, convParams params);
+
+
+uint makingBnParams (NSDictionary* bnParamsInfo);
+std::map<std::string, tensor>  makingBnWeight (NSDictionary* bnWeightInfo,
+                                               uint params);
 
 #endif /* basicBlock_h */

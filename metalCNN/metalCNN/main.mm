@@ -393,7 +393,9 @@ void testBasicBlock(){
     std::string input_path = "/Users/tinglyfeng/Desktop/metalCNN/script/basicBlock/input.bin";
     std::string output_path = "/Users/tinglyfeng/Desktop/metalCNN/script/basicBlock/out.bin";
     shape inShape {2,64,100,100};
-    shape outShape {2,64,100,100};
+//    shape outShape {2,64,100,100};
+    shape outShape {2,128,50,50};
+    
     id <MTLBuffer> inputBuffer = makingInputBuffer(input_path, inShape);
     id <MTLBuffer> outputBuffer = resource->getBuffer(outShape.size());
     
