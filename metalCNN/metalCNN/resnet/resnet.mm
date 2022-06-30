@@ -11,7 +11,7 @@
 basicBlock::basicBlock(std::shared_ptr<gpuResource> resource, convParams& convPara1,
                        convParams& convPara2, uint bnChannel1, uint bnChannel2):resource_(resource),
 conv1_(resource, "conv", convPara1),
-conv2_(resource, "conv", convPara2), relu_(resource, "relu"), bn1_(resource, "bn", bnChannel1), bn2_(resource, "bn", bnChannel2){
+conv2_(resource, "conv", convPara2), relu_(resource, "relu"), bn1_(resource, "bn", bnChannel1), bn2_(resource, "bn", bnChannel2), add_(resource, "elemWiseAdd"){
     
 }
 
@@ -30,7 +30,7 @@ void basicBlock::makingConstantAndShape(const shape& inShape) {
     outShape1_ = shape{(uint)convConst1_.out_batch, conv1_.getParams().outC, (uint)convConst1_.out_height, (uint)convConst1_.out_width};
     bnConst1_ = bnConstant{convConst1_.out_batch, convConst1_.out_slice, convConst1_.out_height, convConst1_.out_width, convConst1_.out_size};
     
-    actConst_  = actConstant{convConst1_.out_batch, convConst1_.out_slice,
+    actConst1_  = actConstant{convConst1_.out_batch, convConst1_.out_slice,
         convConst1_.out_height, convConst1_.out_width
     };
     
@@ -39,6 +39,10 @@ void basicBlock::makingConstantAndShape(const shape& inShape) {
     
     outShape1_ = shape{(uint)convConst1_.out_batch, (uint)conv1_.getParams().outC, (uint)convConst1_.out_height, (uint)convConst1_.out_width};
     outShape2_ = shape {(uint)convConst2_.out_batch, (uint)conv2_.getParams().outC, (uint)convConst2_.out_height, (uint)convConst2_.out_width};
+    
+    addConst_ = elemWiseConstant {convConst2_.out_batch, convConst2_.out_slice, convConst2_.out_height, convConst2_.out_width, convConst2_.out_size};
+    
+    actConst2_ = actConstant{convConst2_.out_batch, convConst2_.out_slice, convConst2_.out_height, convConst2_.out_width};
 }
 
 
@@ -84,9 +88,9 @@ id<MTLCommandBuffer> basicBlock::forward(const id<MTLBuffer> input,
     [reluCommandEncoder setComputePipelineState:relu_.getPSO()];
     inOutBuffers = {interBuffer1, interBuffer1};
     relu_.setBuffer(inOutBuffers, reluCommandEncoder);
-    relu_.setConstant(&actConst_, reluCommandEncoder);
+    relu_.setConstant(&actConst1_, reluCommandEncoder);
     threadGroupCounts = MTLSizeMake(1, 1, 1);
-    threadgroups = MTLSizeMake(actConst_.batch * actConst_.slice * actConst_.height * actConst_.width, 1, 1);
+    threadgroups = MTLSizeMake(actConst1_.batch * actConst1_.slice * actConst1_.height * actConst1_.width, 1, 1);
     [reluCommandEncoder dispatchThreadgroups:threadgroups threadsPerThreadgroup:threadGroupCounts];
     [reluCommandEncoder endEncoding];
     
@@ -108,14 +112,37 @@ id<MTLCommandBuffer> basicBlock::forward(const id<MTLBuffer> input,
     // encode bn2
     id<MTLComputeCommandEncoder> bnCommandEncoder2 = [commandBuffer computeCommandEncoder];
     [bnCommandEncoder2 setComputePipelineState:bn2_.getPSO()];
-    inOutBuffers = {interBuffer2, output};
+    inOutBuffers = {interBuffer2, interBuffer2};
     bn2_.setBuffer(inOutBuffers, bnCommandEncoder2);
     bn2_.setConstant(&bnConst2_, bnCommandEncoder2);
     threadGroupCounts = MTLSizeMake(1, 1, 1);
     threadgroups = MTLSizeMake(bnConst2_.batch * bnConst2_.slice * bnConst2_.height * bnConst2_.width, 1, 1);
     [bnCommandEncoder2  dispatchThreadgroups:threadgroups threadsPerThreadgroup:threadGroupCounts];
     [bnCommandEncoder2 endEncoding];
-        
+    
+    
+    // encode add
+    id <MTLComputeCommandEncoder> addCommandEncoder = [commandBuffer computeCommandEncoder];
+    [addCommandEncoder setComputePipelineState:add_.getPSO()];
+    inOutBuffers = {input, interBuffer2, output};
+    add_.setBuffer(inOutBuffers, addCommandEncoder);
+    add_.setConstant(&addConst_, addCommandEncoder);
+    threadGroupCounts = MTLSizeMake(1, 1, 1);
+    threadgroups = MTLSizeMake(addConst_.batch * addConst_.slice * addConst_.height * addConst_.width ,1 , 1);
+    [addCommandEncoder dispatchThreadgroups:threadgroups threadsPerThreadgroup:threadGroupCounts];
+    [addCommandEncoder endEncoding];
+    
+
+    // encode relu
+    id<MTLComputeCommandEncoder> relu2CommandEncoder = [commandBuffer computeCommandEncoder];
+    [relu2CommandEncoder setComputePipelineState:relu_.getPSO()];
+    inOutBuffers = {output, output};
+    relu_.setBuffer(inOutBuffers, relu2CommandEncoder);
+    relu_.setConstant(&actConst2_, relu2CommandEncoder);
+    threadGroupCounts = MTLSizeMake(1, 1, 1);
+    threadgroups = MTLSizeMake(actConst2_.batch * actConst2_.slice * actConst2_.height * actConst2_.width, 1, 1);
+    [relu2CommandEncoder dispatchThreadgroups:threadgroups threadsPerThreadgroup:threadGroupCounts];
+    [relu2CommandEncoder endEncoding];
     
     return commandBuffer;
     

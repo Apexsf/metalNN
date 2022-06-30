@@ -115,6 +115,8 @@ bn2 = basic_block.bn2
 relu = basic_block.relu
 
 out =  bn2(conv2(relu(bn1(conv1(x)))))
+out = out + x
+out = relu(out)
 # out = conv1(x)
 # out = bn1(conv1(x))
 # out = relu(bn1(conv1(x)))
@@ -122,6 +124,7 @@ out =  bn2(conv2(relu(bn1(conv1(x)))))
 x.detach().flatten().numpy().tofile("input.bin")
 out.detach().flatten().numpy().tofile('out.bin')
 print()
+
 
 # save_conv_weights(basic_block.conv1, dir = weight_dir, name = 'conv1')
 # save_conv_weights(basic_block.conv2, dir = weight_dir, name = 'conv2')

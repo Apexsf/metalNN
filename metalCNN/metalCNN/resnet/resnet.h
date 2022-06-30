@@ -39,11 +39,15 @@ private:
     conv conv2_;
     bn bn2_;
     
+    elemWise add_;
+    
     convConstant convConst1_;
     convConstant convConst2_;
-    actConstant actConst_;
+    actConstant actConst1_;
+    actConstant actConst2_;
     bnConstant bnConst1_;
     bnConstant bnConst2_;
+    elemWiseConstant addConst_;
     
     shape outShape1_;  // output shape from conv1
     shape outShape2_; // output shape from conv2
