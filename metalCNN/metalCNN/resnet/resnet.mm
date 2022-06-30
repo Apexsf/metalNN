@@ -64,10 +64,8 @@ id<MTLCommandBuffer> basicBlock::forward(const id<MTLBuffer> input,
     std::vector<id<MTLBuffer>> inOutBuffers {input, interBuffer1};
     conv1_.setBuffer(inOutBuffers, convCommandEncoder1);
     conv1_.setConstant(&convConst1_, convCommandEncoder1);
+    conv1_.dispatch(&convConst1_, convCommandEncoder1);
     
-    MTLSize threadGroupCounts = MTLSizeMake(1, 1, 1);
-    MTLSize threadgroups = MTLSizeMake(convConst1_.out_width , convConst1_.out_height,  (convConst1_.out_slice * convConst1_.out_batch));
-    [convCommandEncoder1 dispatchThreadgroups:threadgroups threadsPerThreadgroup:threadGroupCounts];
     [convCommandEncoder1 endEncoding];
     
     
@@ -77,9 +75,7 @@ id<MTLCommandBuffer> basicBlock::forward(const id<MTLBuffer> input,
     inOutBuffers = {interBuffer1, interBuffer1};
     bn1_.setBuffer(inOutBuffers, bnCommandEncoder1);
     bn1_.setConstant(&bnConst1_, bnCommandEncoder1);
-    threadGroupCounts = MTLSizeMake(1, 1, 1);
-    threadgroups = MTLSizeMake(bnConst1_.batch * bnConst1_.slice * bnConst1_.height * bnConst1_.width, 1, 1);
-    [bnCommandEncoder1 dispatchThreadgroups:threadgroups threadsPerThreadgroup:threadGroupCounts];
+    bn1_.dispatch(&bnConst1_, bnCommandEncoder1);
     [bnCommandEncoder1 endEncoding];
  
     
@@ -89,9 +85,7 @@ id<MTLCommandBuffer> basicBlock::forward(const id<MTLBuffer> input,
     inOutBuffers = {interBuffer1, interBuffer1};
     relu_.setBuffer(inOutBuffers, reluCommandEncoder);
     relu_.setConstant(&actConst1_, reluCommandEncoder);
-    threadGroupCounts = MTLSizeMake(1, 1, 1);
-    threadgroups = MTLSizeMake(actConst1_.batch * actConst1_.slice * actConst1_.height * actConst1_.width, 1, 1);
-    [reluCommandEncoder dispatchThreadgroups:threadgroups threadsPerThreadgroup:threadGroupCounts];
+    relu_.dispatch(&actConst1_, reluCommandEncoder);
     [reluCommandEncoder endEncoding];
     
     
@@ -103,10 +97,7 @@ id<MTLCommandBuffer> basicBlock::forward(const id<MTLBuffer> input,
     inOutBuffers = {interBuffer1, interBuffer2};
     conv2_.setBuffer(inOutBuffers, convCommandEncoder2);
     conv2_.setConstant(&convConst2_, convCommandEncoder2);
-    
-    threadGroupCounts = MTLSizeMake(1, 1, 1);
-    threadgroups = MTLSizeMake(convConst2_.out_width , convConst2_.out_height,  (convConst2_.out_slice * convConst2_.out_batch));
-    [convCommandEncoder2 dispatchThreadgroups:threadgroups threadsPerThreadgroup: threadGroupCounts];
+    conv2_.dispatch(&convConst2_, convCommandEncoder2);
     [convCommandEncoder2 endEncoding];
     
     // encode bn2
@@ -115,9 +106,7 @@ id<MTLCommandBuffer> basicBlock::forward(const id<MTLBuffer> input,
     inOutBuffers = {interBuffer2, interBuffer2};
     bn2_.setBuffer(inOutBuffers, bnCommandEncoder2);
     bn2_.setConstant(&bnConst2_, bnCommandEncoder2);
-    threadGroupCounts = MTLSizeMake(1, 1, 1);
-    threadgroups = MTLSizeMake(bnConst2_.batch * bnConst2_.slice * bnConst2_.height * bnConst2_.width, 1, 1);
-    [bnCommandEncoder2  dispatchThreadgroups:threadgroups threadsPerThreadgroup:threadGroupCounts];
+    bn2_.dispatch(&bnConst2_, bnCommandEncoder2);
     [bnCommandEncoder2 endEncoding];
     
     
@@ -127,9 +116,7 @@ id<MTLCommandBuffer> basicBlock::forward(const id<MTLBuffer> input,
     inOutBuffers = {input, interBuffer2, output};
     add_.setBuffer(inOutBuffers, addCommandEncoder);
     add_.setConstant(&addConst_, addCommandEncoder);
-    threadGroupCounts = MTLSizeMake(1, 1, 1);
-    threadgroups = MTLSizeMake(addConst_.batch * addConst_.slice * addConst_.height * addConst_.width ,1 , 1);
-    [addCommandEncoder dispatchThreadgroups:threadgroups threadsPerThreadgroup:threadGroupCounts];
+    add_.dispatch(&addConst_, addCommandEncoder);
     [addCommandEncoder endEncoding];
     
 
@@ -139,9 +126,7 @@ id<MTLCommandBuffer> basicBlock::forward(const id<MTLBuffer> input,
     inOutBuffers = {output, output};
     relu_.setBuffer(inOutBuffers, relu2CommandEncoder);
     relu_.setConstant(&actConst2_, relu2CommandEncoder);
-    threadGroupCounts = MTLSizeMake(1, 1, 1);
-    threadgroups = MTLSizeMake(actConst2_.batch * actConst2_.slice * actConst2_.height * actConst2_.width, 1, 1);
-    [relu2CommandEncoder dispatchThreadgroups:threadgroups threadsPerThreadgroup:threadGroupCounts];
+    relu_.dispatch(&actConst2_, relu2CommandEncoder);
     [relu2CommandEncoder endEncoding];
     
     return commandBuffer;

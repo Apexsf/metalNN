@@ -46,8 +46,8 @@
             filePath = "metalCNN/resnet/resnet.mm"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "72"
-            endingLineNumber = "72"
+            startingLineNumber = "70"
+            endingLineNumber = "70"
             landmarkName = "basicBlock::forward(input, inShape, output, commandBufferP)"
             landmarkType = "7">
          </BreakpointContent>
@@ -94,8 +94,8 @@
             filePath = "metalCNN/resnet/resnet.mm"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "141"
-            endingLineNumber = "141"
+            startingLineNumber = "128"
+            endingLineNumber = "128"
             landmarkName = "basicBlock::forward(input, inShape, output, commandBufferP)"
             landmarkType = "7">
          </BreakpointContent>
