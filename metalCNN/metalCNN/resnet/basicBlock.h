@@ -50,6 +50,7 @@ private:
     conv* conv3P_ = nullptr; // perform downsample if exists
     bn* bn3P_ = nullptr; // perform downsample if exists
     convConstant* convConst3_ = nullptr; // perform downsample if exists
+    bnConstant* bnConst3_ = nullptr;
     
     convConstant convConst1_;
     convConstant convConst2_;

@@ -98,7 +98,21 @@ with open("testData.json", 'w') as f:
     json.dump(basicBlockDict, f)
 
 
+# conv1 = basic_block.conv1
+# bn1 = basic_block.bn1
+# relu = basic_block.relu
+# conv2 = basic_block.conv2
+# bn2 = basic_block.bn2
+# conv3 = basic_block.downsample[0]
+# bn3 = basic_block.downsample[1]
+
+# out1 = bn2(conv2(relu(bn1(conv1(x)))))
+# out2= conv3(x)
+# out = out1 + out2
+# out = relu(out)
 out = basic_block(x)
+# out = basic_block(x)
+# out = basic_block.bn2(basic_block.conv2(basic_block.re))
 x.detach().flatten().numpy().tofile("input.bin")
 out.detach().flatten().numpy().tofile('out.bin')
 print()

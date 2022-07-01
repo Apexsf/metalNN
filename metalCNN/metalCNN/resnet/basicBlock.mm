@@ -167,6 +167,7 @@ void basicBlock::makingConstantAndShape(const shape& inShape) {
     
     if (hasDownSample_) {
         convConst3_ = new convConstant( conv::makeConvConstant(inShape, conv3P_->getParams()) );
+        bnConst3_ = new bnConstant{convConst2_.out_batch, convConst2_.out_slice, convConst2_.out_height, convConst2_.out_width, convConst2_.out_size};
     }
 }
 
@@ -212,21 +213,23 @@ id<MTLCommandBuffer> basicBlock::forward(const id<MTLBuffer> input,
         id<MTLBuffer> interBuffer3 = resource_->getBuffer(outShape2_.sizeNC4HW4());
         inOutBuffers = {input, interBuffer3};
         conv3P_->encodeCommand(inOutBuffers, (void*)convConst3_, commandBuffer);
+        inOutBuffers = {interBuffer3, interBuffer3};
+        bn3P_->encodeCommand(inOutBuffers, (void*) bnConst3_, commandBuffer);
         inOutBuffers = {interBuffer3, interBuffer2, output};
         add_.encodeCommand(inOutBuffers, &addConst_, commandBuffer);
-        resource_->putBuffer(interBuffer3);
+//        resource_->putBuffer(interBuffer3);
     } else {
         // encode add
         inOutBuffers = {input, interBuffer2, output};
         add_.encodeCommand(inOutBuffers, &addConst_, commandBuffer);
     }
 
-    // encode relu
+//    // encode relu
     inOutBuffers = {output, output};
     relu_.encodeCommand(inOutBuffers, &actConst2_, commandBuffer);
     
-    resource_->putBuffer(interBuffer1);
-    resource_->putBuffer(interBuffer2);
+//    resource_->putBuffer(interBuffer1);
+//    resource_->putBuffer(interBuffer2);
     
     
     return commandBuffer;
