@@ -17,6 +17,9 @@ public:
     const id<MTLBuffer> getBeta() const {return beta_;}
     const id<MTLBuffer> getRunningMean() const {return runningMean_;}
     const id<MTLBuffer> getRunningVarSqrtWithEps() const {return runningVarSqrtWithEps_;}
+    uint getParams() const {
+        return channel_;
+    }
     
     virtual void loadWeight(std::map<std::string, tensor>& weights) override;
     

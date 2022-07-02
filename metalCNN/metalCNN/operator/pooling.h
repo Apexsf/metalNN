@@ -29,7 +29,9 @@ public:
     
     static poolingConstant makePoolingConstant(const shape& inShape, const poolingParams& params);
     
-    
+    poolingParams getParams() const {
+        return params_;
+    }
     virtual void loadWeight(std::map<std::string, tensor>& weights) override {
         
     }

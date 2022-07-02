@@ -13,10 +13,17 @@
 #include "bn.h"
 #include "act.h"
 #include "elemWise.h"
+#include "pooling.h"
 #include "basicBlock.h"
 //#include "metalConstant.metal"
 
 
+
+
+struct basicLayer {
+    basicBlock block1_;
+    basicBlock block2_;
+};
 
 
 class resnet {
@@ -26,6 +33,12 @@ public:
     
 private:
     std::shared_ptr<gpuResource> resource_;
+//    preLayer preLayer_;
+    basicLayer basicLayer1_;
+    basicLayer basicLayer2_;
+    basicLayer basicLayer3_;
+    basicLayer basicLayer4_;
+    
 };
 
 

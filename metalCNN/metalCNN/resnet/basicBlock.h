@@ -19,12 +19,17 @@ public:
     
     basicBlock(std::shared_ptr<gpuResource> resource, convParams& convPara1,
                convParams& convPara2, uint bnChannel1, uint bnChannel2);
+    
+    basicBlock(std::shared_ptr<gpuResource> resource, conv& conv1,
+               conv& conv2, bn& bn1, bn& bn2);
 //    basicBlock(std::shared_ptr<gpuResource> resource, NSDictionary* blockInfo);
     void loadWeights(std::map<std::string, tensor>& convWeight1, std::map<std::string, tensor>& convWeight2, std::map<std::string, tensor>& bnWeights1, std::map<std::string, tensor>& bnWeights2);
     
     void setDownSampleModule(convParams& convPara3, uint bnChannel3,
                              std::map<std::string, tensor>& convWeight3,
                              std::map<std::string, tensor>& bnWeight3);
+    
+    void setDownSampleModule(conv& conv3, bn& bn3);
     
 //    basicBlock(NSDictionary *infoFromJson);
     
@@ -64,14 +69,5 @@ private:
     shape outShape2_; // output shape from conv2
 };
 
-
-basicBlock makingBasicBlock(std::shared_ptr<gpuResource> resource ,NSDictionary *infoFromJson);
-convParams makingConvParams(NSDictionary* convParamsInfo);
-std::map<std::string, tensor> makingConvWeight (NSDictionary* convWeightInfo, convParams params);
-
-
-uint makingBnParams (NSDictionary* bnParamsInfo);
-std::map<std::string, tensor>  makingBnWeight (NSDictionary* bnWeightInfo,
-                                               uint params);
 
 #endif /* basicBlock_h */

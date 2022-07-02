@@ -16,6 +16,7 @@
 #include "elemWise.h"
 #include "convBnRelu.h"
 #include "resnet.h"
+#include "builder.h"
 
 
 std::shared_ptr<gpuResource> resource = std::make_shared<gpuResource>();
@@ -406,8 +407,36 @@ void testBasicBlock(){
 
     tensor torchOutTensor = makingTorchOutTensorNCHW(output_path, outShape);
     diffProfile(torchOutTensor.getRawPointer(), metalOutTensor.getRawPointer(), torchOutTensor.absSize());
+}
+
+
+void testPreLayer(){
+    NSString *path = @"/Users/tinglyfeng/Desktop/metalCNN/script/preLayer/testData.json";
+    NSData *data = [NSData dataWithContentsOfFile:path];
+    NSError *error;
+    NSDictionary *layerInfo = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
     
+//    basicBlock block = makingBasicBlock(resource, basicBlockInfo);
+    preLayer layer = makingPreLayer(resource, layerInfo);
+    std::string input_path = "/Users/tinglyfeng/Desktop/metalCNN/script/preLayer/input.bin";
+    std::string output_path = "/Users/tinglyfeng/Desktop/metalCNN/script/preLayer/out.bin";
+    shape inShape {2,3,100,100};
+//    shape outShape {2,64,100,100};
+    shape outShape {2,64,25,25};
+//    shape outShape {2,64,50,50};
     
+    id <MTLBuffer> inputBuffer = makingInputBuffer(input_path, inShape);
+    id <MTLBuffer> outputBuffer = resource->getBuffer(outShape.size());
+    
+//    layer.
+
+    id<MTLCommandBuffer> commandBuffer = layer.forward(inputBuffer, inShape, outputBuffer, nullptr);
+    [commandBuffer commit];
+    [commandBuffer waitUntilCompleted];
+    tensor metalOutTensor = makingMetalOutTensorNCHW(outputBuffer, outShape);
+
+    tensor torchOutTensor = makingTorchOutTensorNCHW(output_path, outShape);
+    diffProfile(torchOutTensor.getRawPointer(), metalOutTensor.getRawPointer(), torchOutTensor.absSize());
 }
 
 int main() {
@@ -419,6 +448,7 @@ int main() {
 //    test_convBnRelu();
 //    testBufferPool();
     testBasicBlock();
+    testPreLayer();
 
     NSString *path = @"/Users/tinglyfeng/Desktop/metalCNN/script/basicBlock/testData.json";
     NSData *data = [NSData dataWithContentsOfFile:path];
