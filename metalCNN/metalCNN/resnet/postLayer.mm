@@ -12,7 +12,7 @@ void postLayer::makingConstantAndShape(const shape& inShape){
     poolingParams avgPoolingPara {inShape.height, inShape.width, 0, 0, 1, 1};
     avgpooling_.resetParams(avgPoolingPara);
     poolingConst_ = pooling::makePoolingConstant(inShape, avgPoolingPara);
-    matmulConst_  =  matmulConstant{poolingConst_.out_slice,(int)fc_.getOutC()};
+    matmulConst_  =  matmulConstant{(int)inShape.batch,poolingConst_.out_slice,(int)fc_.getOutC()};
     
 }
 
