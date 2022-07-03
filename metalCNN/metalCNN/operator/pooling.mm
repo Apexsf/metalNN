@@ -22,8 +22,12 @@ void pooling::setConstant(void* constantP, id<MTLComputeCommandEncoder> commandE
 
 void pooling::dispatch(void* constantP, id<MTLComputeCommandEncoder> commandEncoder){
     poolingConstant* p = (poolingConstant*) constantP;
-    MTLSize threadGroupCounts = MTLSizeMake(1, 1, 1);
-    MTLSize threadgroups = MTLSizeMake(p->out_width , p->out_height,  (p->out_slice * p->out_batch));
+    MTLSize threadGroupCounts = MTLSizeMake(16, 16, 4);
+    MTLSize threadgroups = MTLSizeMake(
+                                      divUp(p->out_width, 16),
+                                       divUp(p->out_height, 16),
+                                       divUp(p->out_slice * p->out_batch, 4)
+                                       );
     [commandEncoder dispatchThreadgroups:threadgroups threadsPerThreadgroup:threadGroupCounts];
 }
 

@@ -20,7 +20,7 @@ kernel void conv(const device float4* in[[buffer(0)]],
                  )
 {
     
-    if((int)idx.x >= cp.out_width || (int)idx.y > cp.out_height ||
+    if((int)idx.x >= cp.out_width || (int)idx.y >= cp.out_height ||
        (int)idx.z >= (cp.out_slice * cp.out_batch)) {return;}
 
     int idx_b = idx.z / cp.out_slice;

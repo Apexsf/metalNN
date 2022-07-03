@@ -466,7 +466,6 @@ void testResNet(){
     tensor torchOutTensor = makingTorchOutTensorNCHW(output_path, outShape);
     diffProfile(torchOutTensor.getRawPointer(), metalOutTensor.getRawPointer(), torchOutTensor.absSize());
     
-    std::cout;
 }
 
 
@@ -498,8 +497,43 @@ void test_matmul(){
     mm.runOnce(inOutBuffers, &matmulConst);
     tensor metalOutTensor = makingMetalOutTensorNCHW(outputBuffer, outShape);
     diffProfile(torchOutTensor.getRawPointer(), metalOutTensor.getRawPointer(), torchOutTensor.absSize());
+}
+
+void timeTest(){
+    NSString *path = @"/Users/tinglyfeng/Desktop/metalCNN/script/resnet/testData.json";
+    NSData *data = [NSData dataWithContentsOfFile:path];
+    NSError *error;
+    NSDictionary *netInfo = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+    resnet net = makingResNet(resource, netInfo);
+    std::string input_path = "/Users/tinglyfeng/Desktop/metalCNN/script/resnet/input.bin";
+    std::string output_path = "/Users/tinglyfeng/Desktop/metalCNN/script/resnet/out.bin";
+    shape inShape {1,3,256,256};
+//    shape outShape {2,64,100,100};
+//    shape outShape {2,128,16,16};
+//    shape outShape {2,256,8,8};
+//    shape outShape {4,512,8,8};
+    shape outShape{1,1000,1,1};
+    
+    id <MTLBuffer> inputBuffer = makingInputBuffer(input_path, inShape);
+    id <MTLBuffer> outputBuffer = resource->getBuffer(outShape.sizeNC4HW4());
+    uint64_t startTime, stopTime;
+    NSDate *methodStart = [NSDate date];
+    for(int i = 0; i < 1000; ++i) {
+        id<MTLCommandBuffer> commandBuffer = net.forward(inputBuffer, inShape, outputBuffer, nullptr);
+        [commandBuffer commit];
+        [commandBuffer waitUntilCompleted];
+    }
+    NSDate *methodFinish = [NSDate date];
+    NSTimeInterval executionTime = [methodFinish timeIntervalSinceDate:methodStart];
+    NSLog(@"executionTime = %f", executionTime);
     
     
+    
+    tensor metalOutTensor = makingMetalOutTensorNCHW(outputBuffer, outShape);
+
+    tensor torchOutTensor = makingTorchOutTensorNCHW(output_path, outShape);
+    diffProfile(torchOutTensor.getRawPointer(), metalOutTensor.getRawPointer(), torchOutTensor.absSize());
+
 }
 
 int main() {
@@ -513,7 +547,8 @@ int main() {
 //    testBasicBlock();
 //    testPreLayer();
 //    test_matmul();
-    testResNet();
+//    testResNet();
+    timeTest();
 
     NSString *path = @"/Users/tinglyfeng/Desktop/metalCNN/script/basicBlock/testData.json";
     NSData *data = [NSData dataWithContentsOfFile:path];

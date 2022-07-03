@@ -15,7 +15,7 @@ kernel void poolingMax (const device float4* in [[buffer(0)]],
                      constant poolingConstant& cp [[buffer(2)]],
                      uint3 idx [[thread_position_in_grid]]
                      ) {
-    if((int)idx.x >= cp.out_width || (int)idx.y > cp.out_height ||
+    if((int)idx.x >= cp.out_width || (int)idx.y >= cp.out_height ||
        (int)idx.z >= (cp.out_slice * cp.out_batch)) {return;}
     
     int in_start_x = idx.x * cp.stride_w - cp.pad_x;
@@ -51,7 +51,7 @@ kernel void poolingAvg (const device float4* in [[buffer(0)]],
                      constant poolingConstant& cp [[buffer(2)]],
                      uint3 idx [[thread_position_in_grid]]
                      ) {
-    if((int)idx.x >= cp.out_width || (int)idx.y > cp.out_height ||
+    if((int)idx.x >= cp.out_width || (int)idx.y >= cp.out_height ||
        (int)idx.z >= (cp.out_slice * cp.out_batch)) {return;}
     
     int in_start_x = idx.x * cp.stride_w - cp.pad_x;

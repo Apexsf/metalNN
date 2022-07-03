@@ -53,8 +53,10 @@ void bn::setConstant(void* constantP, id<MTLComputeCommandEncoder> commandEncode
 
 void bn::dispatch(void* constantP, id<MTLComputeCommandEncoder> commandEncoder){
     bnConstant* p = (bnConstant*) constantP;
-    MTLSize threadGroupCounts = MTLSizeMake(1, 1, 1);
-    MTLSize threadgroups = MTLSizeMake(p->batch * p->slice * p->height * p->width, 1, 1);
+    MTLSize threadGroupCounts = MTLSizeMake(1024, 1, 1);
+    MTLSize threadgroups = MTLSizeMake(
+                                      divUp(p->batch * p->slice * p->height * p->width,1024),
+                                       1, 1);
     [commandEncoder dispatchThreadgroups:threadgroups threadsPerThreadgroup:threadGroupCounts];
 }
 

@@ -62,8 +62,10 @@ void matmul::setConstant(void* constantP,  id<MTLComputeCommandEncoder> commandE
 
 void matmul:: dispatch(void* constantP, id<MTLComputeCommandEncoder> commandEncoder){
     matmulConstant* p = (matmulConstant*) constantP;
-    MTLSize threadGroupCounts = MTLSizeMake(1, 1, 1);
-    MTLSize threadgroups = MTLSizeMake(p->batch * p->outC,1,1);
+    MTLSize threadGroupCounts = MTLSizeMake(1024, 1, 1);
+    MTLSize threadgroups = MTLSizeMake(
+                                       divUp(p->batch * p->outC, 1024),1,1
+                                       );
     [commandEncoder dispatchThreadgroups:threadgroups threadsPerThreadgroup:threadGroupCounts];
     
 }
