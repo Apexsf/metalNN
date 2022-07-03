@@ -17,3 +17,5 @@ kernel void relu (const device float4* in [[buffer(0)]],
     if ((int)idx >= (cp.batch * cp.slice * cp.width * cp.height)) return;
     out[idx] = max(in[idx], 0);
 }
+
+

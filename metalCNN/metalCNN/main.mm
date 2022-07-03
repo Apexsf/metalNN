@@ -15,6 +15,7 @@
 #include "pooling.h"
 #include "elemWise.h"
 #include "convBnRelu.h"
+#include "matmul.h"
 #include "resnet.h"
 #include "builder.h"
 
@@ -447,11 +448,11 @@ void testResNet(){
     resnet net = makingResNet(resource, netInfo);
     std::string input_path = "/Users/tinglyfeng/Desktop/metalCNN/script/resnet/input.bin";
     std::string output_path = "/Users/tinglyfeng/Desktop/metalCNN/script/resnet/out.bin";
-    shape inShape {2,3,128,128};
+    shape inShape {2,3,256,256};
 //    shape outShape {2,64,100,100};
 //    shape outShape {2,128,16,16};
 //    shape outShape {2,256,8,8};
-    shape outShape {2,512,4,4};
+    shape outShape {2,512,8,8};
     
     id <MTLBuffer> inputBuffer = makingInputBuffer(input_path, inShape);
     id <MTLBuffer> outputBuffer = resource->getBuffer(outShape.sizeNC4HW4());
@@ -467,6 +468,39 @@ void testResNet(){
     std::cout;
 }
 
+
+void test_matmul(){
+    std::string input_path = "/Users/tinglyfeng/Desktop/metalCNN/script/matmul/input.bin";
+    std::string output_path = "/Users/tinglyfeng/Desktop/metalCNN/script/matmul/out.bin";
+    
+    std::string weight_path = "/Users/tinglyfeng/Desktop/metalCNN/script/matmul/weight.bin";
+    std::string bias_path = "/Users/tinglyfeng/Desktop/metalCNN/script/matmul/bias.bin";
+    
+    shape inShape{1,512,1,1};
+    shape outShape {1,1000,1,1};
+    id<MTLBuffer> inputBuffer = makingInputBuffer(input_path, inShape);
+    id<MTLBuffer> outputBuffer = resource->getBuffer(outShape.channel);
+    tensor torchOutTensor = makingTorchOutTensorNCHW(output_path, outShape);
+    matmul mm(resource, inShape.channel, outShape.channel);
+    tensor weight(1,1,outShape.channel, inShape.channel);
+    tensor bias(1,outShape.channel,1,1);
+    weight.loadFromFile(weight_path.c_str());
+    bias.loadFromFile(bias_path.c_str());
+    std::map<std::string, tensor> weights = {
+        {"weight", std::move(weight)},
+        {"bias", std::move(bias)}
+    };
+    mm.loadWeight(weights);
+    matmulConstant matmulConst {(int)divUp(inShape.channel, 4), (int)outShape.channel};
+    
+    std::vector<id<MTLBuffer>> inOutBuffers{inputBuffer, outputBuffer};;
+    mm.runOnce(inOutBuffers, &matmulConst);
+    tensor metalOutTensor = makingMetalOutTensorNCHW(outputBuffer, outShape);
+    diffProfile(torchOutTensor.getRawPointer(), metalOutTensor.getRawPointer(), torchOutTensor.absSize());
+    
+    
+}
+
 int main() {
 //    test_conv();
 //    test_bn();
@@ -477,7 +511,8 @@ int main() {
 //    testBufferPool();
 //    testBasicBlock();
 //    testPreLayer();
-    testResNet();
+    test_matmul();
+//    testResNet();
 
     NSString *path = @"/Users/tinglyfeng/Desktop/metalCNN/script/basicBlock/testData.json";
     NSData *data = [NSData dataWithContentsOfFile:path];

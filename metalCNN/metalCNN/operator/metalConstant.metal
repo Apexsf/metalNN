@@ -76,4 +76,9 @@ struct elemWiseConstant {
     int size;
 };
 
+struct matmulConstant{
+    int inSlice; // divUp(inC, 4)
+    int outC;
+};
+
 #endif
