@@ -28,6 +28,7 @@
 		09A197562870343100B6F74E /* preLayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09A197542870343100B6F74E /* preLayer.mm */; };
 		09A19759287183CD00B6F74E /* matmul.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09A19757287183CD00B6F74E /* matmul.mm */; };
 		09A1975B287183F000B6F74E /* matmul.metal in Sources */ = {isa = PBXBuildFile; fileRef = 09A1975A287183F000B6F74E /* matmul.metal */; };
+		09A1975E287198DC00B6F74E /* postLayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09A1975D287198DC00B6F74E /* postLayer.mm */; };
 		09D80039285DB3540032DC00 /* utils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09D80037285DB3540032DC00 /* utils.mm */; };
 		09D8003C285DC2F00032DC00 /* tensor.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09D8003A285DC2F00032DC00 /* tensor.mm */; };
 		09D8004B285F45A00032DC00 /* metalConstant.metal in Sources */ = {isa = PBXBuildFile; fileRef = 09D8004A285F45A00032DC00 /* metalConstant.metal */; };
@@ -81,6 +82,8 @@
 		09A19757287183CD00B6F74E /* matmul.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = matmul.mm; sourceTree = "<group>"; };
 		09A19758287183CD00B6F74E /* matmul.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = matmul.h; sourceTree = "<group>"; };
 		09A1975A287183F000B6F74E /* matmul.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = matmul.metal; sourceTree = "<group>"; };
+		09A1975C287198DC00B6F74E /* postLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = postLayer.h; sourceTree = "<group>"; };
+		09A1975D287198DC00B6F74E /* postLayer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = postLayer.mm; sourceTree = "<group>"; };
 		09D80037285DB3540032DC00 /* utils.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = utils.mm; sourceTree = "<group>"; };
 		09D80038285DB3540032DC00 /* utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
 		09D8003A285DC2F00032DC00 /* tensor.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = tensor.mm; sourceTree = "<group>"; };
@@ -148,6 +151,8 @@
 				09A19751287026B600B6F74E /* builder.mm */,
 				09A197462868416D00B6F74E /* convBnRelu.h */,
 				09A197452868416D00B6F74E /* convBnRelu.mm */,
+				09A1975C287198DC00B6F74E /* postLayer.h */,
+				09A1975D287198DC00B6F74E /* postLayer.mm */,
 				09A197552870343100B6F74E /* preLayer.h */,
 				09A197542870343100B6F74E /* preLayer.mm */,
 				09A1974C2869D63600B6F74E /* resnet.h */,
@@ -274,6 +279,7 @@
 				09A197332864B3BC00B6F74E /* bn.metal in Sources */,
 				09A1974D2869D63600B6F74E /* resnet.mm in Sources */,
 				09A197432868394100B6F74E /* elemWise.metal in Sources */,
+				09A1975E287198DC00B6F74E /* postLayer.mm in Sources */,
 				09A197412868365600B6F74E /* elemWise.mm in Sources */,
 				0972B2F5285B770900812F87 /* conv.mm in Sources */,
 				09A19753287026B600B6F74E /* builder.mm in Sources */,

@@ -32,6 +32,10 @@ public:
     poolingParams getParams() const {
         return params_;
     }
+    void resetParams (const poolingParams& params) {
+        params_ = params;
+    }
+    
     virtual void loadWeight(std::map<std::string, tensor>& weights) override {
         
     }

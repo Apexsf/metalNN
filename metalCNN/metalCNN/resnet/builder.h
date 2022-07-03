@@ -9,6 +9,7 @@
 #define builder_h
 #include "basicBlock.h"
 #include "resnet.h"
+#include "postLayer.h"
 #include "preLayer.h"
 
 resnet makingResNet(std::shared_ptr<gpuResource> resource ,NSDictionary *infoFromJson);
@@ -20,6 +21,10 @@ basicLayer makingBasicLayer(std::shared_ptr<gpuResource> resource ,NSDictionary 
 conv makingConv(std::shared_ptr<gpuResource> resource ,NSDictionary *infoFromJson);
 
 bn makingBN(std::shared_ptr<gpuResource> resource ,NSDictionary *infoFromJson);
+
+postLayer makingPostLayer(std::shared_ptr<gpuResource> resource ,NSDictionary *infoFromJson);
+
+matmul makingFC(std::shared_ptr<gpuResource> resource ,NSDictionary *infoFromJson);
 
 preLayer makingPreLayer(std::shared_ptr<gpuResource> resource, NSDictionary* infoFromJson);
 basicLayer makingBasicLayer(std::shared_ptr<gpuResource> resource, NSDictionary* infoFromJson);
@@ -33,6 +38,9 @@ std::map<std::string, tensor> makingConvWeight (NSDictionary* convWeightInfo, co
 uint makingBnParams (NSDictionary* bnParamsInfo);
 std::map<std::string, tensor>  makingBnWeight (NSDictionary* bnWeightInfo,
                                                uint params);
+
+std::map<std::string, tensor>  makingFCWeight (NSDictionary* fcWeightInfo,
+                                               uint inC, uint outC);
 
 
 

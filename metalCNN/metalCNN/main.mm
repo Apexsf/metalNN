@@ -452,7 +452,8 @@ void testResNet(){
 //    shape outShape {2,64,100,100};
 //    shape outShape {2,128,16,16};
 //    shape outShape {2,256,8,8};
-    shape outShape {2,512,8,8};
+//    shape outShape {2,512,8,8};
+    shape outShape{2,1000,1,1};
     
     id <MTLBuffer> inputBuffer = makingInputBuffer(input_path, inShape);
     id <MTLBuffer> outputBuffer = resource->getBuffer(outShape.sizeNC4HW4());
@@ -511,8 +512,8 @@ int main() {
 //    testBufferPool();
 //    testBasicBlock();
 //    testPreLayer();
-    test_matmul();
-//    testResNet();
+//    test_matmul();
+    testResNet();
 
     NSString *path = @"/Users/tinglyfeng/Desktop/metalCNN/script/basicBlock/testData.json";
     NSData *data = [NSData dataWithContentsOfFile:path];

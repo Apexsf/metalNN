@@ -8,12 +8,13 @@
 #include "builder.h"
 
 resnet makingResNet(std::shared_ptr<gpuResource> resource ,NSDictionary *infoFromJson){
-    preLayer pl = makingPreLayer(resource, infoFromJson[@"preLayer"]);
+    preLayer prel = makingPreLayer(resource, infoFromJson[@"preLayer"]);
     basicLayer bl1 = makingBasicLayer(resource, infoFromJson[@"basicLayer1"]);
     basicLayer bl2 = makingBasicLayer(resource, infoFromJson[@"basicLayer2"]);
     basicLayer bl3 = makingBasicLayer(resource, infoFromJson[@"basicLayer3"]);
     basicLayer bl4 = makingBasicLayer(resource, infoFromJson[@"basicLayer4"]);
-    resnet net(resource, pl, bl1, bl2, bl3, bl4);
+    postLayer postl = makingPostLayer(resource, infoFromJson[@"postLayer"]);
+    resnet net(resource, prel, bl1, bl2, bl3, bl4, postl);
     return net;
 }
 
@@ -38,6 +39,14 @@ basicLayer makingBasicLayer(std::shared_ptr<gpuResource> resource ,NSDictionary 
         makingBasicBlock(resource, infoFromJson[@"basicBlock1"]),
         makingBasicBlock(resource, infoFromJson[@"basicBlock2"])
     };
+}
+
+postLayer makingPostLayer(std::shared_ptr<gpuResource> resource ,NSDictionary *infoFromJson){
+    return postLayer(
+                     resource,
+                     pooling(resource, "poolingAvg", poolingParams{0,0,0,0,0,0}),
+                     makingFC(resource, infoFromJson[@"fc"])
+                     );
 }
 
 
@@ -85,6 +94,14 @@ bn makingBN(std::shared_ptr<gpuResource> resource ,NSDictionary *infoFromJson) {
     return b;
 }
 
+matmul makingFC(std::shared_ptr<gpuResource> resource ,NSDictionary *infoFromJson){
+    matmul m(resource, uint([infoFromJson[@"params"][@"inC"] intValue]),
+              uint([infoFromJson[@"params"][@"outC"] intValue]));
+    auto weights = makingFCWeight(infoFromJson[@"weights"], m.getInC(), m.getOutC());
+    m.loadWeight(weights);
+    return m;
+    
+}
 convParams makingConvParams(NSDictionary* convParamsInfo) {
     convParams params{
         uint([convParamsInfo[@"kernelH"] intValue]),
@@ -100,7 +117,19 @@ convParams makingConvParams(NSDictionary* convParamsInfo) {
     return params;
 }
 
-
+std::map<std::string, tensor> makingFCWeight (NSDictionary* fcWeightInfo,
+                                               uint inC, uint outC){
+    
+    tensor weight(1,1, outC, inC);
+    tensor bias(1,outC,1,1);
+    weight.loadFromFile([fcWeightInfo[@"weight"] cString]);
+    bias.loadFromFile([fcWeightInfo[@"bias"] cString]);
+    std::map<std::string, tensor> weights = {
+        {"weight", std::move(weight)},
+        {"bias", std::move(bias)}
+    };
+    return weights;
+}
 
 std::map<std::string, tensor> makingConvWeight (NSDictionary* convWeightInfo, convParams params) {
  

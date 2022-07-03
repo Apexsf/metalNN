@@ -16,6 +16,7 @@
 #include "pooling.h"
 #include "basicBlock.h"
 #include "preLayer.h"
+#include "postLayer.h"
 //#include "metalConstant.metal"
 
 
@@ -29,8 +30,9 @@ struct basicLayer {
 
 class resnet {
 public:
-    resnet(std::shared_ptr<gpuResource> resource, preLayer& pl,
-           basicLayer& bl1, basicLayer& bl2, basicLayer& bl3, basicLayer& bl4);
+    resnet(std::shared_ptr<gpuResource> resource, preLayer& prel,
+           basicLayer& bl1, basicLayer& bl2, basicLayer& bl3, basicLayer& bl4,
+           postLayer& postl);
     
     id<MTLCommandBuffer>forward(const id<MTLBuffer> input, const shape& inShape,
                                   id<MTLBuffer> output, id<MTLCommandBuffer>* commandBufferP);
@@ -45,6 +47,7 @@ private:
     basicLayer basicLayer2_;
     basicLayer basicLayer3_;
     basicLayer basicLayer4_;
+    postLayer postLayer_;
     
 };
 

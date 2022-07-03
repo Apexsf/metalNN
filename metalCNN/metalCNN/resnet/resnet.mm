@@ -13,13 +13,15 @@ shape resnet::getOutputShapeOfLayer(basicLayer& layer, const shape& inShape) {
     return b2OutputShape;
 }
 
-resnet::resnet(std::shared_ptr<gpuResource> resource, preLayer& pl,
-               basicLayer& bl1, basicLayer& bl2, basicLayer& bl3, basicLayer& bl4):
-resource_(resource), preLayer_(pl),
+resnet::resnet(std::shared_ptr<gpuResource> resource, preLayer& prel,
+               basicLayer& bl1, basicLayer& bl2, basicLayer& bl3, basicLayer& bl4, postLayer& postl):
+resource_(resource), preLayer_(prel),
 basicLayer1_(bl1),
 basicLayer2_(bl2),
 basicLayer3_(bl3),
-basicLayer4_(bl4){
+basicLayer4_(bl4),
+postLayer_(postl)
+{
     
 }
 
@@ -59,7 +61,12 @@ id<MTLCommandBuffer> resnet:: forward(const id<MTLBuffer> input, const shape& in
     
     shape layer4Outshape = getOutputShapeOfLayer(basicLayer4_, layer3Outshape);
     id<MTLBuffer> layer4OutputBuffer = resource_->getBuffer(layer4Outshape.sizeNC4HW4());
-    commandBuffer = forwardLayer(layer3OutputBuffer, layer3Outshape, output, &commandBuffer, basicLayer4_);
+    commandBuffer = forwardLayer(layer3OutputBuffer, layer3Outshape, layer4OutputBuffer, &commandBuffer, basicLayer4_);
+    
+    shape postOutShape = postLayer_.getOutShape(layer4Outshape);
+    id <MTLBuffer> postOutBuffer = resource_->getBuffer(postOutShape.sizeNC4HW4());
+    commandBuffer = postLayer_.forward(layer4OutputBuffer, layer4Outshape, output, &commandBuffer);
+    
     
     return commandBuffer;
 }

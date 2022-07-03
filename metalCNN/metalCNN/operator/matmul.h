@@ -19,6 +19,14 @@ class matmul : public op {
 public:
     matmul(std::shared_ptr<gpuResource> resource, uint inC, uint outC);
     
+    uint getInC(){
+        return inC_;
+    }
+    
+    uint getOutC() {
+        return outC_;
+    }
+    
     
     virtual void loadWeight(std::map<std::string, tensor>& weights) override;
     virtual void setBuffer (std::vector<id<MTLBuffer>>& inOutBuffers, id<MTLComputeCommandEncoder> commandEncoder) override;

@@ -39,6 +39,23 @@ def makeConvDict(conv, baseName):
     "bias" : bias_path}
     return {"weights" : weights, "params" : params}
 
+def makeFcDict(fc, baseName):
+    weight = fc.weight.data
+    bias = fc.bias.data
+    weight_path =  os.path.join(weight_dir, "{}_fc.bin".format(baseName))
+    bias_path = os.path.join(weight_dir, "{}_bias.bin".format(baseName))
+
+    weight_path = os.path.abspath(weight_path)
+    bias_path  = os.path.abspath(bias_path)
+    weight.flatten().numpy().tofile(weight_path)
+    bias.flatten().numpy().tofile(bias_path)
+
+    params = {"inC" : fc.in_features,
+    "outC": fc.out_features}
+    weights = {"weight":weight_path, "bias": bias_path}
+    return {"params": params, "weights":weights}
+    
+
 def makeBnDict(bn, baseName):
     gamma = bn.weight.data
     beta = bn.bias.data
@@ -79,6 +96,8 @@ def makePreLayer(conv, bn, pooling, baseName):
     return {"conv" : makeConvDict(conv, "conv"), "bn" : makeBnDict(bn,"bn"),
     "pooling" : makePoolingDict(pooling, "pooling")}
 
+def makePostLayer(fc, baseName):
+    return {"fc" : makeFcDict(fc, baseName)}
 
 def makeBasicBlock(basicBlock, baseName):
     basicBlockDict = {}
@@ -103,17 +122,19 @@ def makeBasicLayer(layer, baseName):
 
 def makeResNet(resnet, baseName = "resnet"):
     preLayerDict = makePreLayer(resnet.conv1, resnet.bn1, resnet.maxpool,
-    baseName + "preLayer")
+    baseName + "_preLayer")
     layer1Dict = makeBasicLayer(resnet.layer1, baseName + "_layer1")
     layer2Dict = makeBasicLayer(resnet.layer2, baseName + "_layer2")
     layer3Dict = makeBasicLayer(resnet.layer3, baseName + "_layer3")
     layer4Dict = makeBasicLayer(resnet.layer4, baseName + "_layer4")
+    postLayerDict = makePostLayer(resnet.fc, baseName + "_postLayer")
     return {
         "preLayer": preLayerDict,
         "basicLayer1": layer1Dict,
         "basicLayer2": layer2Dict,
         "basicLayer3": layer3Dict,
-        "basicLayer4": layer4Dict
+        "basicLayer4": layer4Dict,
+        "postLayer": postLayerDict
     }
     print()
 
@@ -127,13 +148,13 @@ resnetDict = makeResNet(r18)
 with open("testData.json", 'w') as f:
     json.dump(resnetDict, f)
 
-x = torch.randn((2,3,256,256))
+x = torch.randn((1,3,256,256))
 
 # out = r18.layer1(r18.maxpool(r18.relu(r18.bn1(r18.conv1(x)))))
 # out =r18.layer2( r18.layer1(r18.maxpool(r18.relu(r18.bn1(r18.conv1(x))))))
 # out =r18.layer3( r18.layer2( r18.layer1(r18.maxpool(r18.relu(r18.bn1(r18.conv1(x)))))))
 out =r18.layer4(r18.layer3(r18.layer2(r18.layer1(r18.maxpool(r18.relu(r18.bn1(r18.conv1(x))))))))
-
+out = r18.fc(r18.avgpool(out).squeeze())
 
 x.detach().flatten().numpy().tofile("input.bin")
 out.detach().flatten().numpy().tofile('out.bin')
