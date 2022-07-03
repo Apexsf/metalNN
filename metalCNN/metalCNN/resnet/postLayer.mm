@@ -30,7 +30,7 @@ id<MTLCommandBuffer> postLayer:: forward(const id<MTLBuffer> input, const shape&
     makingConstantAndShape(inShape);
     
     // encode avgpooling
-    id<MTLBuffer> interBuffer1 = resource_->getBuffer(poolingConst_.out_slice * 4);
+    id<MTLBuffer> interBuffer1 = resource_->getBuffer(poolingConst_.out_slice * 4 * poolingConst_.out_batch);
     std::vector<id<MTLBuffer>> inOutBuffers {input, interBuffer1};
     avgpooling_.encodeCommand(inOutBuffers, &poolingConst_, commandBuffer);
     

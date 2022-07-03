@@ -448,12 +448,12 @@ void testResNet(){
     resnet net = makingResNet(resource, netInfo);
     std::string input_path = "/Users/tinglyfeng/Desktop/metalCNN/script/resnet/input.bin";
     std::string output_path = "/Users/tinglyfeng/Desktop/metalCNN/script/resnet/out.bin";
-    shape inShape {5,3,256,256};
+    shape inShape {17,3,256,256};
 //    shape outShape {2,64,100,100};
 //    shape outShape {2,128,16,16};
 //    shape outShape {2,256,8,8};
-//    shape outShape {2,512,8,8};
-    shape outShape{5,1000,1,1};
+//    shape outShape {4,512,8,8};
+    shape outShape{17,1000,1,1};
     
     id <MTLBuffer> inputBuffer = makingInputBuffer(input_path, inShape);
     id <MTLBuffer> outputBuffer = resource->getBuffer(outShape.sizeNC4HW4());

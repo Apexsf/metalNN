@@ -148,7 +148,7 @@ resnetDict = makeResNet(r18)
 with open("testData.json", 'w') as f:
     json.dump(resnetDict, f)
 
-x = torch.randn((5,3,256,256))
+x = torch.randn((17,3,256,256))
 
 # out = r18.layer1(r18.maxpool(r18.relu(r18.bn1(r18.conv1(x)))))
 # out =r18.layer2( r18.layer1(r18.maxpool(r18.relu(r18.bn1(r18.conv1(x))))))

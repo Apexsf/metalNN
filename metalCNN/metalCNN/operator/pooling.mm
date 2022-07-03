@@ -17,7 +17,7 @@ void pooling::setBuffer (std::vector<id<MTLBuffer>>& inOutBuffers, id<MTLCompute
     [commandEncoder setBuffer:inOutBuffers[1] offset:0 atIndex:1];
 }
 void pooling::setConstant(void* constantP, id<MTLComputeCommandEncoder> commandEncoder){
-    [commandEncoder setBytes:constantP length:sizeof(convConstant) atIndex:2];
+    [commandEncoder setBytes:constantP length:sizeof(poolingConstant) atIndex:2];
 }
 
 void pooling::dispatch(void* constantP, id<MTLComputeCommandEncoder> commandEncoder){
