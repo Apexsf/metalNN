@@ -8,9 +8,8 @@ import json
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 torch.manual_seed(42)
 
-r18 = resnet18(pretrained=True)
-weight_dir = "./weights"
 
+weight_dir = "./weights"
 data = {}
 
 if not os.path.exists(weight_dir):
@@ -75,33 +74,63 @@ def makePoolingDict(pooling, baseName):
     "strideH": pooling.stride, "strideW": pooling.stride}
     return {"params": params}
 
+
+def makePreLayer(conv, bn, pooling, baseName):
+    return {"conv" : makeConvDict(conv, "conv"), "bn" : makeBnDict(bn,"bn"),
+    "pooling" : makePoolingDict(pooling, "pooling")}
+
+
+def makeBasicBlock(basicBlock, baseName):
+    basicBlockDict = {}
+    conv1 = basicBlock.conv1
+    conv2 = basicBlock.conv2
+    bn1 = basicBlock.bn1
+    bn2 = basicBlock.bn2
+    basicBlockDict["conv1"] = makeConvDict(conv1, baseName + "_conv1")
+    basicBlockDict["conv2"] = makeConvDict(conv2, baseName + "_conv2")
+    basicBlockDict["bn1"] = makeBnDict(bn1, baseName + "_bn1")
+    basicBlockDict["bn2"] = makeBnDict(bn2, baseName + "_bn2")
+    if basicBlock.downsample is not None:
+        basicBlockDict["conv3"] = makeConvDict(basicBlock.downsample[0], baseName + "_conv3")
+        basicBlockDict["bn3"] = makeBnDict(basicBlock.downsample[1], baseName + "_bn3")
+    return basicBlockDict
+
+def makeBasicLayer(layer, baseName):
+    layerDict = {}
+    layerDict["basicBlock1"] = makeBasicBlock(layer[0], baseName + "_block1")
+    layerDict["basicBlock2"] = makeBasicBlock(layer[1], baseName + "_block2")
+    return layerDict
+
+def makeResNet(resnet, baseName = "resnet"):
+    preLayerDict = makePreLayer(resnet.conv1, resnet.bn1, resnet.maxpool,
+    baseName + "preLayer")
+    layer1Dict = makeBasicLayer(resnet.layer1, baseName + "_layer1")
+    layer2Dict = makeBasicLayer(resnet.layer2, baseName + "_layer2")
+    layer3Dict = makeBasicLayer(resnet.layer3, baseName + "_layer3")
+    layer4Dict = makeBasicLayer(resnet.layer4, baseName + "_layer4")
+    return {
+        "preLayer": preLayerDict,
+        "basicLayer1": layer1Dict,
+        "basicLayer2": layer2Dict,
+        "basicLayer3": layer3Dict,
+        "basicLayer4": layer4Dict
+    }
+    print()
+
+
 # basic_block1 
-conv1= r18.conv1
-bn1 = r18.bn1
-bn1.eval()
-relu = r18.relu
-maxpool = r18.maxpool
+r18 = resnet18(pretrained=True)
+r18 = r18.eval()
 
-conv1Dict = makeConvDict(conv1,"conv")
-bn1Dict = makeBnDict(bn1, "bn")
-poolingDict = makePoolingDict(maxpool, "pooling")
-
-preLayerDict = {
-    "conv": conv1Dict,
-    "bn" : bn1Dict,
-    "pooling": poolingDict
-}
+resnetDict = makeResNet(r18)
 
 with open("testData.json", 'w') as f:
-    json.dump(preLayerDict, f)
+    json.dump(resnetDict, f)
 
 x = torch.randn((2,3,128,128))
-out = maxpool(relu(bn1(conv1(x))))
-# out = bn1(conv1(x))
-# out = conv1(x)
-# out = relu(bn1(conv1(x)))
-# out = conv1(x)
+# out =r18.layer4(r18.layer3(r18.layer2(r18.layer1(r18.maxpool(r18.relu(r18.bn1(r18.conv1(x))))))))
+out =r18.layer1[0](r18.maxpool(r18.relu(r18.bn1(r18.conv1(x)))))
 x.detach().flatten().numpy().tofile("input.bin")
 out.detach().flatten().numpy().tofile('out.bin')
-
+print(out.shape)
 print()

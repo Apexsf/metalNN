@@ -11,7 +11,11 @@
 #include "resnet.h"
 #include "preLayer.h"
 
+resnet makingResNet(std::shared_ptr<gpuResource> resource ,NSDictionary *infoFromJson);
+
 basicBlock makingBasicBlock(std::shared_ptr<gpuResource> resource ,NSDictionary *infoFromJson);
+
+basicLayer makingBasicLayer(std::shared_ptr<gpuResource> resource ,NSDictionary *infoFromJson);
 
 conv makingConv(std::shared_ptr<gpuResource> resource ,NSDictionary *infoFromJson);
 

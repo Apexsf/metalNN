@@ -20,7 +20,7 @@ public:
     
     id<MTLCommandBuffer>forward(const id<MTLBuffer> input, const shape& inShape,
                                   id<MTLBuffer> output, id<MTLCommandBuffer>* commandBufferP);
-    
+    shape getOutputShape(const shape& inShape);
 private:
     std::shared_ptr<gpuResource> resource_;
     void makingConstantAndShape(const shape& inShape);

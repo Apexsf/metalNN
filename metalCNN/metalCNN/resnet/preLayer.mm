@@ -11,6 +11,17 @@ preLayer::preLayer(std::shared_ptr<gpuResource> resource, const conv& c, const b
     
 }
 
+shape preLayer::getOutputShape(const shape& inShape){
+    convConstant convConst = conv::makeConvConstant(inShape, conv_.getParams());
+    shape outShape1 {(uint)convConst.out_batch, conv_.getParams().outC, (uint)convConst.out_height, (uint)convConst.out_width};
+    poolingConstant poolingConst = pooling::makePoolingConstant(outShape1, maxpooling_.getParams());
+    shape outshape2 {(uint) poolingConst.out_batch , (uint) conv_.getParams().outC,
+        (uint)poolingConst.out_height, (uint) poolingConst.out_width
+    };
+    return outshape2;
+    
+}
+
 void preLayer::makingConstantAndShape(const shape& inShape){
     convConst_   = conv::makeConvConstant(inShape, conv_.getParams());
     bnConst_ = bnConstant{convConst_.out_batch, convConst_.out_slice, convConst_.out_height, convConst_.out_width, convConst_.out_size};

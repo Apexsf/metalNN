@@ -30,6 +30,7 @@ public:
                              std::map<std::string, tensor>& bnWeight3);
     
     void setDownSampleModule(conv& conv3, bn& bn3);
+    shape getOutputShape(const shape& inShape);
     
 //    basicBlock(NSDictionary *infoFromJson);
     
@@ -41,7 +42,6 @@ public:
     
     ~basicBlock();
 private:
-    void cleanDownSampleModule();
     void makingConstantAndShape(const shape& inShape);
     std::shared_ptr<gpuResource> resource_;
     conv conv1_;
@@ -52,10 +52,10 @@ private:
     elemWise add_;
     
     bool hasDownSample_ = false;
-    conv* conv3P_ = nullptr; // perform downsample if exists
-    bn* bn3P_ = nullptr; // perform downsample if exists
-    convConstant* convConst3_ = nullptr; // perform downsample if exists
-    bnConstant* bnConst3_ = nullptr;
+    
+    std::shared_ptr<conv> conv3_; // perform downsample if exists
+    std::shared_ptr<bn> bn3_; // perform downsample if exists
+
     
     convConstant convConst1_;
     convConstant convConst2_;
@@ -64,6 +64,8 @@ private:
     bnConstant bnConst1_;
     bnConstant bnConst2_;
     elemWiseConstant addConst_;
+    convConstant convConst3_; // perform downsample if exists
+    bnConstant bnConst3_; // perform downsample if exists
     
     shape outShape1_;  // output shape from conv1
     shape outShape2_; // output shape from conv2

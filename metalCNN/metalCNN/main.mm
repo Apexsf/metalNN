@@ -398,7 +398,7 @@ void testBasicBlock(){
     shape outShape {2,128,50,50};
     
     id <MTLBuffer> inputBuffer = makingInputBuffer(input_path, inShape);
-    id <MTLBuffer> outputBuffer = resource->getBuffer(outShape.size());
+    id <MTLBuffer> outputBuffer = resource->getBuffer(outShape.sizeNC4HW4());
     
     id<MTLCommandBuffer> commandBuffer = block.forward(inputBuffer, inShape, outputBuffer, nullptr);
     [commandBuffer commit];
@@ -420,13 +420,13 @@ void testPreLayer(){
     preLayer layer = makingPreLayer(resource, layerInfo);
     std::string input_path = "/Users/tinglyfeng/Desktop/metalCNN/script/preLayer/input.bin";
     std::string output_path = "/Users/tinglyfeng/Desktop/metalCNN/script/preLayer/out.bin";
-    shape inShape {2,3,100,100};
+    shape inShape {2,3,128,128};
 //    shape outShape {2,64,100,100};
-    shape outShape {2,64,25,25};
+    shape outShape {2,64,32,32};
 //    shape outShape {2,64,50,50};
     
     id <MTLBuffer> inputBuffer = makingInputBuffer(input_path, inShape);
-    id <MTLBuffer> outputBuffer = resource->getBuffer(outShape.size());
+    id <MTLBuffer> outputBuffer = resource->getBuffer(outShape.sizeNC4HW4());
     
 //    layer.
 
@@ -439,6 +439,32 @@ void testPreLayer(){
     diffProfile(torchOutTensor.getRawPointer(), metalOutTensor.getRawPointer(), torchOutTensor.absSize());
 }
 
+void testResNet(){
+    NSString *path = @"/Users/tinglyfeng/Desktop/metalCNN/script/resnet/testData.json";
+    NSData *data = [NSData dataWithContentsOfFile:path];
+    NSError *error;
+    NSDictionary *netInfo = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+    resnet net = makingResNet(resource, netInfo);
+    std::string input_path = "/Users/tinglyfeng/Desktop/metalCNN/script/resnet/input.bin";
+    std::string output_path = "/Users/tinglyfeng/Desktop/metalCNN/script/resnet/out.bin";
+    shape inShape {2,3,128,128};
+//    shape outShape {2,64,100,100};
+    shape outShape {2,64,32,32};
+    
+    id <MTLBuffer> inputBuffer = makingInputBuffer(input_path, inShape);
+    id <MTLBuffer> outputBuffer = resource->getBuffer(outShape.sizeNC4HW4());
+    
+    id<MTLCommandBuffer> commandBuffer = net.forward(inputBuffer, inShape, outputBuffer, nullptr);
+    [commandBuffer commit];
+    [commandBuffer waitUntilCompleted];
+    tensor metalOutTensor = makingMetalOutTensorNCHW(outputBuffer, outShape);
+
+    tensor torchOutTensor = makingTorchOutTensorNCHW(output_path, outShape);
+    diffProfile(torchOutTensor.getRawPointer(), metalOutTensor.getRawPointer(), torchOutTensor.absSize());
+    
+    std::cout;
+}
+
 int main() {
 //    test_conv();
 //    test_bn();
@@ -447,8 +473,9 @@ int main() {
 //    test_elemWise();
 //    test_convBnRelu();
 //    testBufferPool();
-    testBasicBlock();
-    testPreLayer();
+//    testBasicBlock();
+//    testPreLayer();
+    testResNet();
 
     NSString *path = @"/Users/tinglyfeng/Desktop/metalCNN/script/basicBlock/testData.json";
     NSData *data = [NSData dataWithContentsOfFile:path];

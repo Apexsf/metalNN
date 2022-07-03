@@ -7,6 +7,16 @@
 
 #include "builder.h"
 
+resnet makingResNet(std::shared_ptr<gpuResource> resource ,NSDictionary *infoFromJson){
+    preLayer pl = makingPreLayer(resource, infoFromJson[@"preLayer"]);
+    basicLayer bl1 = makingBasicLayer(resource, infoFromJson[@"basicLayer1"]);
+    basicLayer bl2 = makingBasicLayer(resource, infoFromJson[@"basicLayer2"]);
+    basicLayer bl3 = makingBasicLayer(resource, infoFromJson[@"basicLayer3"]);
+    basicLayer bl4 = makingBasicLayer(resource, infoFromJson[@"basicLayer4"]);
+    resnet net(resource, pl, bl1, bl2, bl3, bl4);
+    return net;
+}
+
 basicBlock makingBasicBlock(std::shared_ptr<gpuResource> resource, NSDictionary *infoFromJson) {
     conv conv1 = makingConv(resource, infoFromJson[@"conv1"]);
     conv conv2 = makingConv(resource, infoFromJson[@"conv2"]);
@@ -22,6 +32,14 @@ basicBlock makingBasicBlock(std::shared_ptr<gpuResource> resource, NSDictionary 
     
     return block;
 }
+
+basicLayer makingBasicLayer(std::shared_ptr<gpuResource> resource ,NSDictionary *infoFromJson) {
+    return  {
+        makingBasicBlock(resource, infoFromJson[@"basicBlock1"]),
+        makingBasicBlock(resource, infoFromJson[@"basicBlock2"])
+    };
+}
+
 
 
 

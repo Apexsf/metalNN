@@ -21,20 +21,17 @@ basicBlock:: basicBlock(std::shared_ptr<gpuResource> resource, conv& conv1,
 
 
 
-void basicBlock:: cleanDownSampleModule(){
-    if (conv3P_) {
-        delete conv3P_;
-    }
-    if (bn3P_) {
-        delete bn3P_;
-    }
-    if(convConst3_){
-        delete convConst3_;
-    }
+basicBlock::~basicBlock(){
+
 }
 
-basicBlock::~basicBlock(){
-    cleanDownSampleModule();
+shape basicBlock::getOutputShape(const shape& inShape){
+    
+    convConstant convConst1 = conv::makeConvConstant(inShape, conv1_.getParams());
+    shape outShape1 = shape{(uint)convConst1.out_batch, conv1_.getParams().outC, (uint)convConst1.out_height, (uint)convConst1.out_width};
+    convConstant convConst2 = conv::makeConvConstant(outShape1, conv2_.getParams());
+    shape outShape2 {(uint)convConst2.out_batch, (uint)conv2_.getParams().outC, (uint)convConst2.out_height, (uint)convConst2.out_width};
+    return outShape2;
 }
 
 //basicBlock::basicBlock(std::shared_ptr<gpuResource> resource, NSDictionary* blockInfo){
@@ -71,8 +68,8 @@ void basicBlock::makingConstantAndShape(const shape& inShape) {
     actConst2_ = actConstant{convConst2_.out_batch, convConst2_.out_slice, convConst2_.out_height, convConst2_.out_width};
     
     if (hasDownSample_) {
-        convConst3_ = new convConstant( conv::makeConvConstant(inShape, conv3P_->getParams()) );
-        bnConst3_ = new bnConstant{convConst2_.out_batch, convConst2_.out_slice, convConst2_.out_height, convConst2_.out_width, convConst2_.out_size};
+        convConst3_ = convConstant( conv::makeConvConstant(inShape, conv3_->getParams()) );
+        bnConst3_ = bnConstant{convConst2_.out_batch, convConst2_.out_slice, convConst2_.out_height, convConst2_.out_width, convConst2_.out_size};
     }
 }
 
@@ -117,9 +114,9 @@ id<MTLCommandBuffer> basicBlock::forward(const id<MTLBuffer> input,
     if(hasDownSample_){
         id<MTLBuffer> interBuffer3 = resource_->getBuffer(outShape2_.sizeNC4HW4());
         inOutBuffers = {input, interBuffer3};
-        conv3P_->encodeCommand(inOutBuffers, (void*)convConst3_, commandBuffer);
+        conv3_->encodeCommand(inOutBuffers, &convConst3_, commandBuffer);
         inOutBuffers = {interBuffer3, interBuffer3};
-        bn3P_->encodeCommand(inOutBuffers, (void*) bnConst3_, commandBuffer);
+        bn3_->encodeCommand(inOutBuffers, &bnConst3_, commandBuffer);
         inOutBuffers = {interBuffer3, interBuffer2, output};
         add_.encodeCommand(inOutBuffers, &addConst_, commandBuffer);
 //        resource_->putBuffer(interBuffer3);
@@ -145,17 +142,15 @@ id<MTLCommandBuffer> basicBlock::forward(const id<MTLBuffer> input,
 void basicBlock::setDownSampleModule(convParams& convPara3, uint bnChannel3,
                          std::map<std::string, tensor>& convWeight3,
                                      std::map<std::string, tensor>& bnWeight3) {
-    cleanDownSampleModule();
+    if (hasDownSample_) return;
     hasDownSample_ = true;
-    conv3P_ = new conv(resource_, "conv", convPara3);
-    conv3P_->loadWeight(convWeight3);
-    bn3P_ = new bn(resource_, "bn", bnChannel3);
-    bn3P_->loadWeight(bnWeight3);
+    conv3_ = std::make_shared<conv>(resource_, "conv", convPara3);
+    bn3_ = std::make_shared<bn>(resource_, "bn", bnChannel3);
 }
 
 void basicBlock:: setDownSampleModule(conv& conv3, bn& bn3){
-    cleanDownSampleModule();
+    if(hasDownSample_) return;
     hasDownSample_ = true;
-    conv3P_ = new conv(conv3);
-    bn3P_ = new bn(bn3);
+    conv3_ = std::shared_ptr<conv>(new conv(conv3));
+    bn3_ = std::shared_ptr<bn>(new bn(bn3));
 }
