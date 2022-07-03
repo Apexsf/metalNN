@@ -36,6 +36,9 @@ public:
                                   id<MTLBuffer> output, id<MTLCommandBuffer>* commandBufferP);
     
 private:
+    shape getOutputShapeOfLayer(basicLayer& layer, const shape& inShape);
+    id<MTLCommandBuffer> forwardLayer(const id<MTLBuffer> input, const shape& inShape, id<MTLBuffer> output, id<MTLCommandBuffer>* commandBufferP,basicLayer& layer);
+    
     std::shared_ptr<gpuResource> resource_;
     preLayer preLayer_;
     basicLayer basicLayer1_;

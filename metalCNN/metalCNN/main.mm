@@ -449,7 +449,9 @@ void testResNet(){
     std::string output_path = "/Users/tinglyfeng/Desktop/metalCNN/script/resnet/out.bin";
     shape inShape {2,3,128,128};
 //    shape outShape {2,64,100,100};
-    shape outShape {2,64,32,32};
+//    shape outShape {2,128,16,16};
+//    shape outShape {2,256,8,8};
+    shape outShape {2,512,4,4};
     
     id <MTLBuffer> inputBuffer = makingInputBuffer(input_path, inShape);
     id <MTLBuffer> outputBuffer = resource->getBuffer(outShape.sizeNC4HW4());
