@@ -11,6 +11,7 @@
 #import <Metal/Metal.h>
 #include <map>
 #include <vector>
+
 class gpuResource {
 public:
     using  bufferVec_t = std::vector<id<MTLBuffer>> ;
@@ -46,6 +47,18 @@ private:
     id <MTLDevice> device_;
     id <MTLLibrary> library_;
     id <MTLCommandQueue> commandQueue_;
+};
+
+
+class scopeBuffer {
+public:
+    scopeBuffer(std::shared_ptr<gpuResource> resource, size_t size);
+    ~scopeBuffer();
+    id<MTLBuffer> get();
+  
+private:
+    id<MTLBuffer> buffer_;
+    std::shared_ptr<gpuResource> resource_;
 };
 
 

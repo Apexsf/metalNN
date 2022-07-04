@@ -283,7 +283,11 @@ void test_pooling() {
     
     pooling poolingOp(resource, std::string("poolingAvg"), poolingPara);
     std::vector<id<MTLBuffer>> inOutBuffers{inputBuffer, outputBuffer};
-    poolingOp.runOnce(inOutBuffers, &poolingConst);
+    
+    for(int i = 0; i < 1000000; i++){
+        poolingOp.runOnce(inOutBuffers, &poolingConst);
+    }
+   
     
     tensor metalOutTensor = makingMetalOutTensorNCHW(outputBuffer, outShape);
     diffProfile(torchOutTensor.getRawPointer(), metalOutTensor.getRawPointer(), torchOutTensor.absSize());
@@ -494,7 +498,10 @@ void test_matmul(){
     matmulConstant matmulConst {1, (int)divUp(inShape.channel, 4), (int)outShape.channel};
     
     std::vector<id<MTLBuffer>> inOutBuffers{inputBuffer, outputBuffer};;
-    mm.runOnce(inOutBuffers, &matmulConst);
+    for(int i = 0; i < 10000000; i++){
+        mm.runOnce(inOutBuffers, &matmulConst);
+    }
+
     tensor metalOutTensor = makingMetalOutTensorNCHW(outputBuffer, outShape);
     diffProfile(torchOutTensor.getRawPointer(), metalOutTensor.getRawPointer(), torchOutTensor.absSize());
 }
@@ -518,10 +525,13 @@ void timeTest(){
     id <MTLBuffer> outputBuffer = resource->getBuffer(outShape.sizeNC4HW4());
     uint64_t startTime, stopTime;
     NSDate *methodStart = [NSDate date];
-    for(int i = 0; i < 1000; ++i) {
-        id<MTLCommandBuffer> commandBuffer = net.forward(inputBuffer, inShape, outputBuffer, nullptr);
-        [commandBuffer commit];
-        [commandBuffer waitUntilCompleted];
+    for(int i = 0; i < 500; ++i) {
+        @autoreleasepool {
+            id<MTLCommandBuffer> commandBuffer = net.forward(inputBuffer, inShape, outputBuffer, nullptr);
+            [commandBuffer commit];
+            [commandBuffer waitUntilCompleted];
+        }
+ 
     }
     NSDate *methodFinish = [NSDate date];
     NSTimeInterval executionTime = [methodFinish timeIntervalSinceDate:methodStart];
@@ -550,15 +560,5 @@ int main() {
 //    testResNet();
     timeTest();
 
-    NSString *path = @"/Users/tinglyfeng/Desktop/metalCNN/script/basicBlock/testData.json";
-    NSData *data = [NSData dataWithContentsOfFile:path];
-    NSError *error;
-    NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
-    NSDictionary *conv1Dict = jsonObject[@"conv1"];
-    auto a = conv1Dict[@"params"][@"kernelH"];
-    auto cc = conv1Dict[@"weights"][@"weight"];
-    auto cs = [cc cString];
-//    auto b =[a intValue];
-    auto b = [a intValue];
     return 0;
 }

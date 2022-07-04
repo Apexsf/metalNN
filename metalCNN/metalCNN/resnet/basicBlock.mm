@@ -85,44 +85,48 @@ id<MTLCommandBuffer> basicBlock::forward(const id<MTLBuffer> input,
     
     
     // encode conv1
-    id<MTLBuffer> interBuffer1 = resource_->getBuffer(convConst1_.out_batch * convConst1_.out_slice * 4 * convConst1_.out_size);
-    std::vector<id<MTLBuffer>> inOutBuffers {input, interBuffer1};
+//    id<MTLBuffer> interBuffer1 = resource_->getBuffer(convConst1_.out_batch * convConst1_.out_slice * 4 * convConst1_.out_size);
+    scopeBuffer sb1(resource_, convConst1_.out_batch * convConst1_.out_slice * 4 * convConst1_.out_size);
+    std::vector<id<MTLBuffer>> inOutBuffers {input, sb1.get()};
     conv1_.encodeCommand(inOutBuffers, &convConst1_, commandBuffer);
     
     
     // encode bn1
-    inOutBuffers = {interBuffer1, interBuffer1};
+    inOutBuffers = {sb1.get(), sb1.get()};
     bn1_.encodeCommand(inOutBuffers, &bnConst1_, commandBuffer);
 
  
     
     //encode relu
-    inOutBuffers = {interBuffer1, interBuffer1};
+    inOutBuffers = {sb1.get(), sb1.get()};
     relu_.encodeCommand(inOutBuffers, &actConst1_, commandBuffer);
 
     
     // encode conv2
-    id<MTLBuffer> interBuffer2 = resource_->getBuffer(convConst2_.out_batch * convConst2_.out_slice * 4 * convConst2_.out_size);
-    inOutBuffers = {interBuffer1, interBuffer2};
+//    id<MTLBuffer> interBuffer2 = resource_->getBuffer(convConst2_.out_batch * convConst2_.out_slice * 4 * convConst2_.out_size);
+    scopeBuffer sb2 (resource_, convConst2_.out_batch * convConst2_.out_slice * 4 * convConst2_.out_size);
+    inOutBuffers = {sb1.get(), sb2.get()};
     conv2_.encodeCommand(inOutBuffers, &convConst2_, commandBuffer);
 
     
     // encode bn2
-    inOutBuffers = {interBuffer2, interBuffer2};
+    inOutBuffers = {sb2.get(), sb2.get()};
     bn2_.encodeCommand(inOutBuffers, &bnConst2_, commandBuffer);
     
     if(hasDownSample_){
-        id<MTLBuffer> interBuffer3 = resource_->getBuffer(outShape2_.sizeNC4HW4());
-        inOutBuffers = {input, interBuffer3};
+//        id<MTLBuffer> interBuffer3 = resource_->getBuffer(outShape2_.sizeNC4HW4());
+        scopeBuffer sb3 (resource_, outShape2_.sizeNC4HW4());
+        
+        inOutBuffers = {input, sb3.get()};
         conv3_->encodeCommand(inOutBuffers, &convConst3_, commandBuffer);
-        inOutBuffers = {interBuffer3, interBuffer3};
+        inOutBuffers = {sb3.get(), sb3.get()};
         bn3_->encodeCommand(inOutBuffers, &bnConst3_, commandBuffer);
-        inOutBuffers = {interBuffer3, interBuffer2, output};
+        inOutBuffers = {sb3.get(), sb2.get(), output};
         add_.encodeCommand(inOutBuffers, &addConst_, commandBuffer);
-//        resource_->putBuffer(interBuffer3);
+//        resource_->putBuffer(sb3.get());
     } else {
         // encode add
-        inOutBuffers = {input, interBuffer2, output};
+        inOutBuffers = {input, sb2.get(), output};
         add_.encodeCommand(inOutBuffers, &addConst_, commandBuffer);
     }
 

@@ -82,4 +82,18 @@ struct matmulConstant{
     int outC;
 };
 
+struct  interpConstant{
+    int in_batch;
+    int in_slice;
+    int in_size;
+    int in_height;
+    int in_width;
+    
+    int out_batch;
+    int out_slice;
+    int out_size;
+    int out_height;
+    int out_width;
+};
+
 #endif

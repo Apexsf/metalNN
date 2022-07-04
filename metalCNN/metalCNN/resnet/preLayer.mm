@@ -37,21 +37,24 @@ id<MTLCommandBuffer> preLayer:: forward (const id<MTLBuffer> input, const shape&
     makingConstantAndShape(inShape);
     
     // encode conv
-    id<MTLBuffer> interBuffer1 = resource_->getBuffer(convConst_.out_batch * convConst_.out_slice * 4 * convConst_.out_size);
-    std::vector<id<MTLBuffer>> inOutBuffers {input, interBuffer1};
+//    id<MTLBuffer> interBuffer1 = resource_->getBuffer(convConst_.out_batch * convConst_.out_slice * 4 * convConst_.out_size);
+    scopeBuffer sb1(resource_, convConst_.out_batch * convConst_.out_slice * 4 * convConst_.out_size);
+    std::vector<id<MTLBuffer>> inOutBuffers {input, sb1.get()};
     conv_.encodeCommand(inOutBuffers, &convConst_, commandBuffer);
     
 //     encode bn1
-    inOutBuffers = {interBuffer1, interBuffer1};
+    inOutBuffers = {sb1.get(), sb1.get()};
     bn_.encodeCommand(inOutBuffers, &bnConst_, commandBuffer);
     
     
 // encode relu
-    inOutBuffers = {interBuffer1, interBuffer1};
+    inOutBuffers = {sb1.get(), sb1.get()};
     relu_.encodeCommand(inOutBuffers, &actConst_, commandBuffer);
 //
-    inOutBuffers = {interBuffer1, output};
+    inOutBuffers = {sb1.get(), output};
     maxpooling_.encodeCommand(inOutBuffers, &poolingConst_, commandBuffer);
+    
+//    resource_->putBuffer(interBuffer1);
 //
     return commandBuffer;
     

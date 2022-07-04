@@ -27,3 +27,17 @@ void gpuResource::putBuffer(size_t size, id<MTLBuffer> buffer) {
 void gpuResource::putBuffer(id<MTLBuffer> buffer) {
     putBuffer(buffer.length / sizeof(float), buffer);
 }
+
+
+scopeBuffer::scopeBuffer(std::shared_ptr<gpuResource> resource, size_t size):
+resource_(resource){
+    buffer_ = resource_->getBuffer(size);
+}
+
+id<MTLBuffer> scopeBuffer::get(){
+    return buffer_;
+}
+
+scopeBuffer::~scopeBuffer(){
+    resource_->putBuffer(buffer_);
+}
