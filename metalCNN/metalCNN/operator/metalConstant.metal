@@ -82,7 +82,7 @@ struct matmulConstant{
     int outC;
 };
 
-struct  interpConstant{
+struct  interpBilinearConstant{
     int in_batch;
     int in_slice;
     int in_size;
@@ -94,6 +94,19 @@ struct  interpConstant{
     int out_size;
     int out_height;
     int out_width;
+    
+    
+// for bilinear interpolation, see
+// https://stackoverflow.com/questions/70024313/resize-using-bilinear-interpolation-in-python
+//    float w_scale_center;
+//    float h_scale_center;
+//    float w_scale;
+//    float h_scale;
+    
+    float w_scale;
+    float h_scale;
+    float w_offset; // = -w_scale_center * w_scale+ w_ori_center
+    float h_offset ; // = -h_scale_center * h_scale + h_ori_center
 };
 
 #endif

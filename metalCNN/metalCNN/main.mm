@@ -18,7 +18,7 @@
 #include "matmul.h"
 #include "resnet.h"
 #include "builder.h"
-
+#include "interp.h"
 
 std::shared_ptr<gpuResource> resource = std::make_shared<gpuResource>();
 
@@ -506,6 +506,31 @@ void test_matmul(){
     diffProfile(torchOutTensor.getRawPointer(), metalOutTensor.getRawPointer(), torchOutTensor.absSize());
 }
 
+void testinterp(){
+    std::string input_path = "/Users/tinglyfeng/Desktop/metalCNN/script/interp/input.bin";
+    std::string output_path = "/Users/tinglyfeng/Desktop/metalCNN/script/interp/out.bin";
+    
+    shape inShape{3,29,37,67};
+//    interpParams params {interpParams::targetMode::SCALE, 0 , 0, 159.0 / 37, 229.0 / 67};
+    interpParams params {interpParams::targetMode::SIZE , 159 ,229, 0.0, 0.0};
+    interpBilinearConstant Const = interp::makingBilinearConstant(inShape, params);
+    shape outShape{(uint)Const.out_batch, inShape.channel, (uint)Const.out_height, (uint)Const.out_width};
+    
+    id<MTLBuffer> inputBuffer = makingInputBuffer(input_path, inShape);
+    id<MTLBuffer> outputBuffer = resource->getBuffer(outShape.sizeNC4HW4());
+    std::vector<id<MTLBuffer>> inOutBuffers{inputBuffer, outputBuffer};
+    
+    tensor torchOutTensor = makingTorchOutTensorNCHW(output_path, outShape);
+    
+    interp interpOp(resource, std::string("interpBilinear"), params);
+    
+    interpOp.runOnce(inOutBuffers, &Const);
+    
+    tensor metalOUtput = makingMetalOutTensorNCHW(outputBuffer, outShape);
+    diffProfile(torchOutTensor.getRawPointer(), metalOUtput.getRawPointer(), torchOutTensor.absSize());
+    
+}
+
 void timeTest(){
     NSString *path = @"/Users/tinglyfeng/Desktop/metalCNN/script/resnet/testData.json";
     NSData *data = [NSData dataWithContentsOfFile:path];
@@ -525,7 +550,7 @@ void timeTest(){
     id <MTLBuffer> outputBuffer = resource->getBuffer(outShape.sizeNC4HW4());
     uint64_t startTime, stopTime;
     NSDate *methodStart = [NSDate date];
-    for(int i = 0; i < 500; ++i) {
+    for(int i = 0; i < 100; ++i) {
         @autoreleasepool {
             id<MTLCommandBuffer> commandBuffer = net.forward(inputBuffer, inShape, outputBuffer, nullptr);
             [commandBuffer commit];
@@ -557,8 +582,10 @@ int main() {
 //    testBasicBlock();
 //    testPreLayer();
 //    test_matmul();
+    testinterp();
 //    testResNet();
-    timeTest();
+//    timeTest();
+    
 
     return 0;
 }
