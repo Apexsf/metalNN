@@ -41,6 +41,10 @@ public:
     
     static interpBilinearConstant makingBilinearConstant(const shape& inShape, const interpParams& params);
     
+    interpParams getParams(){
+        return params_;
+    }
+    
     
     virtual void loadWeight(std::map<std::string, tensor>& weights) override {
         

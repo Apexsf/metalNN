@@ -11,6 +11,7 @@
 #include "resnet.h"
 #include "postLayer.h"
 #include "preLayer.h"
+#include "interp.h"
 
 resnet makingResNet(std::shared_ptr<gpuResource> resource ,NSDictionary *infoFromJson);
 
@@ -21,6 +22,8 @@ basicLayer makingBasicLayer(std::shared_ptr<gpuResource> resource ,NSDictionary 
 conv makingConv(std::shared_ptr<gpuResource> resource ,NSDictionary *infoFromJson);
 
 bn makingBN(std::shared_ptr<gpuResource> resource ,NSDictionary *infoFromJson);
+
+interp makingInterp(std::shared_ptr<gpuResource> resource ,NSDictionary *infoFromJson);
 
 postLayer makingPostLayer(std::shared_ptr<gpuResource> resource ,NSDictionary *infoFromJson);
 

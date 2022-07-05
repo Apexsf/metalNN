@@ -50,7 +50,13 @@ postLayer makingPostLayer(std::shared_ptr<gpuResource> resource ,NSDictionary *i
 }
 
 
-
+interp makingInterp(std::shared_ptr<gpuResource> resource ,NSDictionary *infoFromJson) {
+    return interp(resource, "interpBilinear",
+                  {interpParams::targetMode::SIZE,
+     uint([infoFromJson[@"H"] intValue]),
+        uint([infoFromJson[@"W"] intValue]),
+        0,0});
+}
 
 preLayer makingPreLayer(std::shared_ptr<gpuResource> resource, NSDictionary* infoFromJson) {
     return preLayer(
@@ -58,9 +64,11 @@ preLayer makingPreLayer(std::shared_ptr<gpuResource> resource, NSDictionary* inf
         makingConv(resource, infoFromJson[@"conv"]),
         makingBN(resource, infoFromJson[@"bn"]),
         act(resource, "relu"),
-        makingPooling(resource, "poolingMax", infoFromJson[@"pooling"])
+        makingPooling(resource, "poolingMax", infoFromJson[@"pooling"]),
+        makingInterp(resource, infoFromJson[@"inputSize"])
     );
 }
+
 
 
 pooling makingPooling(std::shared_ptr<gpuResource>resource, std::string poolingMode, NSDictionary* infoFromJson){

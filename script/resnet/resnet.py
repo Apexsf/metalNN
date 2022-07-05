@@ -3,6 +3,7 @@ import numpy as np
 import torch.nn as nn
 from torchvision.models import resnet18
 import os
+import torch.nn.functional as F
 import json
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -93,7 +94,11 @@ def makePoolingDict(pooling, baseName):
 
 
 def makePreLayer(conv, bn, pooling, baseName):
-    return {"conv" : makeConvDict(conv, "conv"), "bn" : makeBnDict(bn,"bn"),
+    return {"inputSize": {
+        "H":256,
+        "W":256
+    },
+        "conv" : makeConvDict(conv, "conv"), "bn" : makeBnDict(bn,"bn"),
     "pooling" : makePoolingDict(pooling, "pooling")}
 
 def makePostLayer(fc, baseName):
@@ -148,14 +153,14 @@ resnetDict = makeResNet(r18)
 with open("testData.json", 'w') as f:
     json.dump(resnetDict, f)
 
-x = torch.randn((1,3,256,256))
-
+x = torch.randn((11,3,456,420))
+x_in = F.interpolate(x, size = (256,256), mode = "bilinear")
 # out = r18.layer1(r18.maxpool(r18.relu(r18.bn1(r18.conv1(x)))))
 # out =r18.layer2( r18.layer1(r18.maxpool(r18.relu(r18.bn1(r18.conv1(x))))))
 # out =r18.layer3( r18.layer2( r18.layer1(r18.maxpool(r18.relu(r18.bn1(r18.conv1(x)))))))
-out =r18.layer4(r18.layer3(r18.layer2(r18.layer1(r18.maxpool(r18.relu(r18.bn1(r18.conv1(x))))))))
-out = r18.fc(r18.avgpool(out).squeeze())
-
+# out =r18.layer4(r18.layer3(r18.layer2(r18.layer1(r18.maxpool(r18.relu(r18.bn1(r18.conv1(x))))))))
+# out = r18.fc(r18.avgpool(out).squeeze())
+out = r18(x_in)
 x.detach().flatten().numpy().tofile("input.bin")
 out.detach().flatten().numpy().tofile('out.bin')
 print(out.shape)
