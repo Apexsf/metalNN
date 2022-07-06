@@ -5,7 +5,10 @@
 //  Created by tinglyfeng on 2022/6/16.
 //
 
+
 #import <Foundation/Foundation.h>
+#import <AppKit/NSImage.h>
+#import <AppKit/NSColor.h>
 #include <chrono>
 #include <iostream>
 #include <string>
@@ -19,6 +22,7 @@
 #include "resnet.h"
 #include "builder.h"
 #include "interp.h"
+
 
 std::shared_ptr<gpuResource> resource = std::make_shared<gpuResource>();
 
@@ -452,7 +456,7 @@ void testResNet(){
     resnet net = makingResNet(resource, netInfo);
     std::string input_path = "/Users/tinglyfeng/Desktop/metalCNN/script/resnet/input.bin";
     std::string output_path = "/Users/tinglyfeng/Desktop/metalCNN/script/resnet/out.bin";
-    shape inShape {12,3,456,420};
+    shape inShape {1,3,198,167};
 //    shape outShape {2,64,100,100};
 //    shape outShape {2,128,16,16};
 //    shape outShape {2,256,8,8};
@@ -571,6 +575,70 @@ void timeTest(){
 
 }
 
+
+
+void inference(){
+    NSString *path = @"/Users/tinglyfeng/Desktop/metalCNN/script/resnet/testData.json";
+    NSData *data = [NSData dataWithContentsOfFile:path];
+    NSError *error;
+    NSDictionary *netInfo = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+    resnet net = makingResNet(resource, netInfo);
+    
+    std::string input_path = "/Users/tinglyfeng/Desktop/metalCNN/script/resnet/input.bin";
+    std::string output_path = "/Users/tinglyfeng/Desktop/metalCNN/script/resnet/out.bin";
+    
+    NSImage* image = [[NSImage alloc] initWithContentsOfFile: @"/Users/tinglyfeng/Desktop/lion.jpg"];
+    
+    NSBitmapImageRep* imageRep = [[NSBitmapImageRep alloc] initWithData:[image TIFFRepresentation]];
+    unsigned char*  imageRawData =   [imageRep bitmapData];
+    
+    NSInteger samplesPerPixel = [imageRep samplesPerPixel];
+    NSInteger bytesPerPlane = [imageRep bytesPerPlane];
+    NSInteger bytesPerRow = [imageRep bytesPerRow];
+    NSInteger numberOfPlanes = [imageRep numberOfPlanes];
+    NSUInteger numPixels = numberOfPlanes * bytesPerPlane / samplesPerPixel;
+    NSUInteger width = bytesPerRow / samplesPerPixel;
+    NSUInteger height = numPixels / width;
+    
+    id <MTLBuffer> inputBuffer = resource->getBuffer(numPixels * 4 * sizeof(float));
+    float* floatImageData = (float*)inputBuffer.contents;
+    for(int i = 0; i < numPixels; ++i){
+        floatImageData[i*4] = (float( imageRawData[i*3+2]) / 255 - 0.406) / 0.225;
+        floatImageData[i*4+1] = (float(imageRawData[i*3+1] )/ 255 - 0.456) / 0.224;
+        floatImageData[i*4+2] = (float(imageRawData[i*3])/ 255 - 0.485) / 0.229;
+    }
+    
+    
+    shape inShape {1,3,(uint)height, (uint)width};
+//    shape outShape {2,64,100,100};
+//    shape outShape {2,128,16,16};
+//    shape outShape {2,256,8,8};
+//    shape outShape {4,512,8,8};
+    shape outShape{1,1000,1,1};
+    
+//    id <MTLBuffer> inputBuffer = makingInputBuffer(input_path, inShape);
+    id <MTLBuffer> outputBuffer = resource->getBuffer(outShape.sizeNC4HW4());
+    
+    id<MTLCommandBuffer> commandBuffer = net.forward(inputBuffer, inShape, outputBuffer, nullptr);
+    [commandBuffer commit];
+    [commandBuffer waitUntilCompleted];
+    tensor metalOutTensor = makingMetalOutTensorNCHW(outputBuffer, outShape);
+    float* p = metalOutTensor.getRawPointer();
+    int maxidx = -1;
+    float maxSimi = -10000000;
+    for(int i = 0; i < 1000; i++){
+        if(p[i] > maxSimi){
+            maxSimi = p[i];
+            maxidx = i;
+        }
+    }
+
+    tensor torchOutTensor = makingTorchOutTensorNCHW(output_path, outShape);
+    diffProfile(torchOutTensor.getRawPointer(), metalOutTensor.getRawPointer(), torchOutTensor.absSize());
+    
+}
+
+
 int main() {
 //    test_conv();
 //    test_bn();
@@ -583,9 +651,62 @@ int main() {
 //    testPreLayer();
 //    test_matmul();
 //    testinterp();
-    testResNet();
+//    testResNet();
 //    timeTest();
-    
+    inference();
 
+//    NSString *path =   @"USER/user2/.../xxx.xxx";
+//    NSFileManager *fileManager = [NSFileManager defaultManager];
+//    BOOL isFileExist = [fileManager fileExistsAtPath:path];
+//    UIImage *image;
+//    if (isFileExist) {
+//        image = [[UIImage alloc] initWithContentsOfFile:path];
+//    }
+//    else {
+//        // do something.<br>
+//    }
+//
+//    NSImage * picture =  [[NSImage alloc] initWithContentsOfFile: [bundleRoot stringByAppendingString:tString]]
+    
+    NSImage* image = [[NSImage alloc] initWithContentsOfFile: @"/Users/tinglyfeng/Desktop/dep_deploy/MNN/resource/images/cat.jpg"];
+    NSImageRep *rep = [[image representations] objectAtIndex:0];
+    
+    NSBitmapImageRep* imageRep = [[NSBitmapImageRep alloc] initWithData:[image TIFFRepresentation]];
+//    NSSize imageSize = [yourImage size];
+//    CGFloat y = imageSize.height - 100.0;
+//    NSColor* color = [imageRep colorAtX:100.0 y:0];
+    
+    [image lockFocus]; // yourImage is just your NSImage variable
+    NSColor *pixelColor = NSReadPixel(NSMakePoint(1, 1)); // Or another point
+    NSColor *color = NSReadPixel(NSMakePoint(100, 100)); // Or another point
+    
+    CGFloat red = [color redComponent];
+    CGFloat green = [color greenComponent];
+    CGFloat blue = [color blueComponent];
+    [image unlockFocus];
+    
+    NSData* a = [imageRep TIFFRepresentation];
+
+    NSUInteger b = [a length];
+    unsigned char*  imageRawData =   [imageRep bitmapData];
+    
+    NSInteger samplesPerPixel = [imageRep samplesPerPixel];
+    NSInteger bytesPerPlane = [imageRep bytesPerPlane];
+    NSInteger bytesPerRow = [imageRep bytesPerRow];
+    NSInteger numberOfPlanes = [imageRep numberOfPlanes];
+    NSUInteger numPixels = numberOfPlanes * bytesPerPlane / samplesPerPixel;
+    NSUInteger width = bytesPerRow / samplesPerPixel;
+    NSUInteger height = numPixels / width;
+    
+    float* floatImageData = new float[bytesPerPlane];
+    for(int i = 0; i < bytesPerPlane; ++i){
+        floatImageData[i] = float(imageRawData[i]); //rgb order
+    }
+    
+    
+    NSData *imageData = [image TIFFRepresentation];
+    NSUInteger len = [imageData length];
+    unsigned char* array = (unsigned char*) [imageData bytes];
+    float* floatArray = (float*)(array);
     return 0;
 }

@@ -141,7 +141,7 @@ def makeResNet(resnet, baseName = "resnet"):
         "basicLayer4": layer4Dict,
         "postLayer": postLayerDict
     }
-    print()
+
 
 
 # basic_block1 
@@ -153,7 +153,7 @@ resnetDict = makeResNet(r18)
 with open("testData.json", 'w') as f:
     json.dump(resnetDict, f)
 
-x = torch.randn((11,3,456,420))
+x = torch.randn((1,3,198,167))
 x_in = F.interpolate(x, size = (256,256), mode = "bilinear")
 # out = r18.layer1(r18.maxpool(r18.relu(r18.bn1(r18.conv1(x)))))
 # out =r18.layer2( r18.layer1(r18.maxpool(r18.relu(r18.bn1(r18.conv1(x))))))

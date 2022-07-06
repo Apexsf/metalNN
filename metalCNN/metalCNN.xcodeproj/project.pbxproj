@@ -31,6 +31,7 @@
 		09A1975E287198DC00B6F74E /* postLayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09A1975D287198DC00B6F74E /* postLayer.mm */; };
 		09A197612871E16300B6F74E /* interp.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09A197602871E16300B6F74E /* interp.mm */; };
 		09A197632871E1E000B6F74E /* interp.metal in Sources */ = {isa = PBXBuildFile; fileRef = 09A197622871E1E000B6F74E /* interp.metal */; };
+		09A197652875B15B00B6F74E /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09A197642875B15B00B6F74E /* AppKit.framework */; };
 		09D80039285DB3540032DC00 /* utils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09D80037285DB3540032DC00 /* utils.mm */; };
 		09D8003C285DC2F00032DC00 /* tensor.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09D8003A285DC2F00032DC00 /* tensor.mm */; };
 		09D8004B285F45A00032DC00 /* metalConstant.metal in Sources */ = {isa = PBXBuildFile; fileRef = 09D8004A285F45A00032DC00 /* metalConstant.metal */; };
@@ -89,6 +90,7 @@
 		09A1975F2871E16300B6F74E /* interp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = interp.h; sourceTree = "<group>"; };
 		09A197602871E16300B6F74E /* interp.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = interp.mm; sourceTree = "<group>"; };
 		09A197622871E1E000B6F74E /* interp.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = interp.metal; sourceTree = "<group>"; };
+		09A197642875B15B00B6F74E /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		09D80037285DB3540032DC00 /* utils.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = utils.mm; sourceTree = "<group>"; };
 		09D80038285DB3540032DC00 /* utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
 		09D8003A285DC2F00032DC00 /* tensor.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = tensor.mm; sourceTree = "<group>"; };
@@ -101,6 +103,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				09A197652875B15B00B6F74E /* AppKit.framework in Frameworks */,
 				0972B30B285B863C00812F87 /* Metal.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -142,6 +145,7 @@
 		0972B309285B863C00812F87 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				09A197642875B15B00B6F74E /* AppKit.framework */,
 				0972B30A285B863C00812F87 /* Metal.framework */,
 			);
 			name = Frameworks;
