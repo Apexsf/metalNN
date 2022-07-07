@@ -8,19 +8,7 @@ import json
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 torch.manual_seed(42)
-
-
 x = torch.randn((3,29,37,67))
-
-
 x.detach().flatten().numpy().tofile("input.bin")
-
 out = F.interpolate(x, size = (159,229),mode="bilinear")
 out.detach().flatten().numpy().tofile('out.bin')
-
-
-w_scale = 0.5
-h_scale = 0.5
-w_offset = -0.25
-h_offset = -0.25
-print()
