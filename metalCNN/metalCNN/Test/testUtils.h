@@ -17,7 +17,6 @@
 #include "act.h"
 #include "pooling.h"
 #include "elemWise.h"
-#include "convBnRelu.h"
 #include "matmul.h"
 #include "resnet.h"
 #include "builder.h"
