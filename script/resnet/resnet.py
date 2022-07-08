@@ -150,7 +150,7 @@ r18 = r18.eval()
 
 resnetDict = makeResNet(r18)
 
-with open("testData.json", 'w') as f:
+with open("ResNet.json", 'w') as f:
     json.dump(resnetDict, f)
 
 x = torch.randn((1,3,198,167))

@@ -59,6 +59,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		090266A828785CB6005D789F /* classes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = classes.h; sourceTree = "<group>"; };
+		090266AA287867B1005D789F /* dog.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = dog.jpg; sourceTree = "<group>"; };
+		090266AB28786941005D789F /* lion.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = lion.jpg; path = ../../../../lion.jpg; sourceTree = "<group>"; };
+		090266AC28786941005D789F /* tiger.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = tiger.jpg; path = ../../../../tiger.jpg; sourceTree = "<group>"; };
 		0972B2E7285B76C700812F87 /* metalCNN */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = metalCNN; sourceTree = BUILT_PRODUCTS_DIR; };
 		0972B2EA285B76C700812F87 /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		0972B2F1285B76F600812F87 /* conv.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = conv.metal; sourceTree = "<group>"; };
@@ -252,6 +256,10 @@
 		09D80040285E0A2F0032DC00 /* resource */ = {
 			isa = PBXGroup;
 			children = (
+				090266AB28786941005D789F /* lion.jpg */,
+				090266AC28786941005D789F /* tiger.jpg */,
+				090266AA287867B1005D789F /* dog.jpg */,
+				090266A828785CB6005D789F /* classes.h */,
 			);
 			path = resource;
 			sourceTree = "<group>";
