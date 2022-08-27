@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		09588CC428B9DC5200C62E8C /* convBn.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09588CC328B9DC5200C62E8C /* convBn.mm */; };
+		09588CCB28B9F2DA00C62E8C /* testConvBn.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09588CC928B9F2DA00C62E8C /* testConvBn.mm */; };
 		0972B2EB285B76C700812F87 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0972B2EA285B76C700812F87 /* main.mm */; };
 		0972B2F2285B76F600812F87 /* conv.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0972B2F1285B76F600812F87 /* conv.metal */; };
 		0972B2F5285B770900812F87 /* conv.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0972B2F3285B770900812F87 /* conv.mm */; };
@@ -62,6 +64,9 @@
 		090266AA287867B1005D789F /* dog.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = dog.jpg; sourceTree = "<group>"; };
 		090266AB28786941005D789F /* lion.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = lion.jpg; path = ../../../../lion.jpg; sourceTree = "<group>"; };
 		090266AC28786941005D789F /* tiger.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = tiger.jpg; path = ../../../../tiger.jpg; sourceTree = "<group>"; };
+		09588CC328B9DC5200C62E8C /* convBn.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = convBn.mm; sourceTree = "<group>"; };
+		09588CC528B9DC6900C62E8C /* convBn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = convBn.h; sourceTree = "<group>"; };
+		09588CC928B9F2DA00C62E8C /* testConvBn.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = testConvBn.mm; sourceTree = "<group>"; };
 		0972B2E7285B76C700812F87 /* metalCNN */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = metalCNN; sourceTree = BUILT_PRODUCTS_DIR; };
 		0972B2EA285B76C700812F87 /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		0972B2F1285B76F600812F87 /* conv.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = conv.metal; sourceTree = "<group>"; };
@@ -192,15 +197,16 @@
 		09A197662876FFC800B6F74E /* Test */ = {
 			isa = PBXGroup;
 			children = (
-				09A197672877019500B6F74E /* testUtils.h */,
+				09A1977028770FDA00B6F74E /* testAct.mm */,
 				09A19768287701DF00B6F74E /* testBn.mm */,
+				09A1976E287709D600B6F74E /* testConv.mm */,
 				09A197722877120900B6F74E /* testElemWise.mm */,
 				09A1976A2877028700B6F74E /* testInterp.mm */,
-				09A1976E287709D600B6F74E /* testConv.mm */,
-				09A1977828771F8000B6F74E /* testResNet.mm */,
-				09A1977028770FDA00B6F74E /* testAct.mm */,
+				09588CC928B9F2DA00C62E8C /* testConvBn.mm */,
 				09A19774287715D800B6F74E /* testMatMul.mm */,
 				09A197762877173200B6F74E /* testPooling.mm */,
+				09A1977828771F8000B6F74E /* testResNet.mm */,
+				09A197672877019500B6F74E /* testUtils.h */,
 				09A1976C287703AA00B6F74E /* testUtils.mm */,
 			);
 			path = Test;
@@ -218,9 +224,14 @@
 				0972B2F4285B770900812F87 /* conv.h */,
 				0972B2F1285B76F600812F87 /* conv.metal */,
 				0972B2F3285B770900812F87 /* conv.mm */,
+				09588CC528B9DC6900C62E8C /* convBn.h */,
+				09588CC328B9DC5200C62E8C /* convBn.mm */,
 				09A197402868365600B6F74E /* elemWise.h */,
 				09A197422868394100B6F74E /* elemWise.metal */,
 				09A1973F2868365600B6F74E /* elemWise.mm */,
+				09A1975F2871E16300B6F74E /* interp.h */,
+				09A197622871E1E000B6F74E /* interp.metal */,
+				09A197602871E16300B6F74E /* interp.mm */,
 				09A19758287183CD00B6F74E /* matmul.h */,
 				09A1975A287183F000B6F74E /* matmul.metal */,
 				09A19757287183CD00B6F74E /* matmul.mm */,
@@ -230,9 +241,6 @@
 				09A1973B2867084900B6F74E /* pooling.h */,
 				09A1973D2867086800B6F74E /* pooling.metal */,
 				09A1973A2867084900B6F74E /* pooling.mm */,
-				09A1975F2871E16300B6F74E /* interp.h */,
-				09A197622871E1E000B6F74E /* interp.metal */,
-				09A197602871E16300B6F74E /* interp.mm */,
 			);
 			path = operator;
 			sourceTree = "<group>";
@@ -325,6 +333,7 @@
 				0972B2EB285B76C700812F87 /* main.mm in Sources */,
 				0972B2F2285B76F600812F87 /* conv.metal in Sources */,
 				09A1973128621AE300B6F74E /* bn.mm in Sources */,
+				09588CCB28B9F2DA00C62E8C /* testConvBn.mm in Sources */,
 				09A197392867064B00B6F74E /* act.metal in Sources */,
 				09A1973C2867084900B6F74E /* pooling.mm in Sources */,
 				09A19775287715D800B6F74E /* testMatMul.mm in Sources */,
@@ -347,6 +356,7 @@
 				09D8004B285F45A00032DC00 /* metalConstant.metal in Sources */,
 				0972B300285B7B3400812F87 /* operator.mm in Sources */,
 				09A1976B2877028700B6F74E /* testInterp.mm in Sources */,
+				09588CC428B9DC5200C62E8C /* convBn.mm in Sources */,
 				09A1976D287703AA00B6F74E /* testUtils.mm in Sources */,
 				09A197562870343100B6F74E /* preLayer.mm in Sources */,
 				09D8003C285DC2F00032DC00 /* tensor.mm in Sources */,

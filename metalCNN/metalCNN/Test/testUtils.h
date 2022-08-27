@@ -21,7 +21,7 @@
 #include "resnet.h"
 #include "builder.h"
 #include "interp.h"
-
+#include "convBn.h"
 
 void testConv();
 void testBn();
@@ -31,6 +31,7 @@ void testElemWise();
 void testMatMul();
 void testInterp();
 void testResNet();
+void testConvBn();
 
 
 id<MTLBuffer> makingInputBuffer(std::shared_ptr<gpuResource>resource, std::string input_path, const shape& shp);
